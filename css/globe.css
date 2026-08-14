@@ -1,0 +1,821 @@
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	font-family: "Open Sans", Arial, sans-serif;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	background-image: radial-gradient(circle farthest-corner at center, #3C4B57 0%, #1C262B 100%);
+}
+
+#globeCanvas {
+	z-index: 1;
+}
+
+#globalContext {
+	position: absolute;
+	top: 0;
+	background: #424242;
+	height: 35px;
+	width: 100%;
+	padding-left: 10px;
+	z-index: 10000;
+	white-space: nowrap;
+}
+h1 {
+	z-index: 999999;
+	position: absolute;
+	bottom: 0;
+	left: 10px;
+	font-size: 20px;
+	font-weight: normal;
+}
+h1 a {
+	text-decoration: none;
+	color: white;
+}
+#globalMenu {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+}
+#globalMenu > li {
+	list-style: none;
+	float: left;
+	display: inline-block;
+	padding: 0 14px;
+	line-height: 35px;
+	cursor: pointer;
+	color: white;
+	font-size: 13px;
+}
+#globalMenu > li:hover {
+	color: #53A3FE;
+	box-shadow: inset 0 -4px 0px -2px #53a3fe
+}
+#contextMenu {
+	display: none;
+	position: absolute;
+	top: 35px;
+	left: 10px;
+	width: 240px;
+	background: #424242;
+	padding: 10px 0 15px 12px;
+	box-shadow: inset 0 5px 6px -6px #3f51b5, 0px 2px 4px -1px #454545;
+	z-index: 10000;
+	color: white;
+}
+#contextMenu a {
+	color: #00A2E8;
+}
+#contextMenu a:active {
+	color: #00A2E8;
+}
+#contextMenu > div {
+	display: none;
+}
+.menuSelected {
+	color: #53A3FE !important;
+	border-bottom: 3px solid #53A3FE;
+}
+#contextMenu > div.submenuSelected {
+	display: block;
+}
+#measureBox, #atmosphereSettings, #gridSettings {
+	margin: 5px 20px 10px;
+	display: none;
+}
+#gridSettings input {
+	width: 30px;
+}
+h2 {
+	margin: 13px 12px 7px;
+	font: normal 16px "Open Sans";
+}
+p, #imgurURL, label, span {
+	font-size: 12px;
+}
+.subscript {
+	margin: 0 15px;
+	font-size: 10px;
+}
+#savingMessage, #imgurMessage {
+	display: none;
+}
+.reset {
+	margin: 0;
+	cursor: pointer;
+}
+.info {
+	width: 200px;
+}
+#radius {
+	width: 50px;
+}
+#globalContext .menuDisabled {
+	color: #5E5E5E;
+	cursor: default;
+}
+#globalContext .menuDisabled:hover {
+	color: #5E5E5E;
+}
+#worldWidth, #worldHeight {
+	width: 50px;
+}
+.generatePropOutput {
+	font-size: 14px;
+	margin-left: 5px;
+}
+#generateSeed {
+	width: 135px;
+	margin-right: 5px;
+}
+.axisTilt {
+	width: 50px;
+	margin-left: 5px;
+}
+#imgCanvas {
+	position: absolute;
+	top: 100px;
+	left: 65px;
+	background-color: white;
+}
+#errorWindow, #imgurUrl {
+	z-index: 999999;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.4);
+	display: none;
+}
+#errorWindow > div, #imgurUrl > div{
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+#errorWindow > div > div, #imgurUrl > div > div{
+	position: relative;
+	display: inline-block;
+	width: 500px;
+	background: rgba(0,0,0,0.7);
+}
+#gifImage {
+	width: 450px;
+	margin-bottom: 20px;
+	display: block;
+    margin: 10px auto;
+}
+#counterValue {
+	padding: 0 0 10px 0;
+	margin-top: -10px;
+}
+#imgurError {
+	font-style: italic;
+	font-size: 17px;
+}
+.closeButton {
+	position: absolute;
+	top: 5px;
+	right: 0;
+	background: none;
+	color: white;
+	font-size: 15px;
+	border: none !important;
+	outline: none !important;
+	box-shadow: none !important;
+}
+.closeButton:hover {
+	cursor: pointer;
+}
+
+#fileUploadLabel:hover, #getImgurLabel:hover {
+	border: solid black 1px;
+}
+#fileUploadLabel:active, #getImgurLabel:active {
+	box-shadow: 0 0 1px black inset;
+}
+#fileUpload {
+	position: fixed;
+	top: -1000px;
+}
+#imgurUrlBox {
+	padding: 5px;
+	outline-color: #00ff2f;
+	font-size: 13px;
+	width: 230px;
+}
+#getImgurUrl {
+	width: 100px;
+	height: 30px;
+	font-size: 15px;
+	display: none;
+}
+
+#projectionArea {
+	display: none;
+}
+
+#projectionMenu {
+	position: absolute;
+	background-color: #757575;
+	z-index: 9999;
+	top: 30px;
+	width: 100%;
+	height: 40px;
+}
+
+#projMenuContainer {
+	position: absolute;
+	top: -5px;
+	left: 65px;
+}
+
+#projText {
+	font-size: 14px;
+}
+
+#projectionSelect {
+	position: relative;
+	top: -2px;
+	height: 25px;
+}
+
+#projImportant {
+	font-size: 14px;
+	margin-left: 50px;
+}
+
+#projDownload {
+	font-size: 14px;
+}
+
+#projectionCanvas, #projImage {
+	position: absolute;
+	top: 100px;
+	margin-right: auto;
+	margin-left: auto;
+	left: 0;
+	right: 0;
+}
+
+#projDownload {
+	background: url('./img/download2.png') center center no-repeat;
+	display: inline-block;
+	position: relative;
+	top: 9px;
+	left: 3px;
+	width: 32px;
+	height: 32px;
+}
+
+#projDownload:hover {
+	box-shadow: 0 0 2px black;
+}
+
+#projDownload:active {
+	box-shadow: inset 0 0 4px black;
+}
+
+#projImage {
+	display: none;
+}
+
+#colorPick {
+	margin-top: 10px;
+}
+#gridColor {
+	width: 30px;
+	height: 15px;
+	border: 1px solid white;
+	display: inline-block;
+	vertical-align: sub;
+}
+
+#measure {
+	margin-top: 15px;
+}
+#sunReset {
+	margin-top: 10px;
+}
+#additionalAnim {
+	display: none;
+}
+#saveURL, #keyURL {
+	width: 325px;
+    text-align: center;
+    height: 25px;
+    font-size: 13px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid black;
+}
+#keyURL {
+	width: 450px;
+}
+input {
+	font-family: "Open Sans";
+	font-size: 12px;
+}
+input[type="button"] {
+	border: none;
+	outline: none;
+	padding: 4px 10px;
+	box-shadow: 0 1px 3px 0 #5e5e5e;
+	border-radius: 1px;
+	margin-bottom: 7px;
+}
+input[type="button"]:hover:enabled {
+	background: #D1D1D1;
+}
+input[type="button"]:active:enabled {
+	box-shadow: inset 0 0 1px 0 black;
+}
+input[type="checkbox"], input[type="radio"] {
+	position: relative;
+	vertical-align: middle;
+	bottom: 1px;
+}
+input[type="radio"] {
+	bottom: 3px;
+}
+input[type="range"] {
+	width: 180px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	height: 9px;
+	padding: 0;
+	background-color: grey;
+	outline: none;
+}
+input[type='range']::-moz-range-track {
+	-moz-appearance: none;
+	background-color: grey;
+	height: 7px;
+}
+input[type='range']::-moz-range-thumb {
+	-moz-appearance: none;
+	border-radius: 0;
+	background-color: white;
+	height: 17px;
+	width: 7px;
+}
+input[type='range']::-webkit-slider-thumb {
+	-webkit-appearance: none !important;
+	border-radius: 0;
+	background-color: #F5F5F5;
+	border: 1px solid grey;
+	height: 19px;
+	width: 9px;
+}
+.remodal-confirm:disabled, .remodal-confirm:disabled:hover {
+	background: #afd0b0;
+	cursor: default;
+}
+
+.toggle-button {
+	vertical-align: middle;
+	background-color: #83B152;
+	margin: 5px;
+	border-radius: 20px;
+	border: 2px solid #7DA652;
+	height: 24px;
+	cursor: pointer;
+	width: 50px;
+	position: relative;
+	display: inline-block;
+	user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+}
+
+.toggle-button button {
+	cursor: pointer;
+	outline: 0;
+	display:block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	border-radius: 100%;
+	width: 24px;
+	height: 24px;
+	background-color: white;
+	float: left;
+	transition: left 0.3s;
+	border: none;
+	box-shadow: 0 0 4px rgba(0,0,0,0.1);
+}
+
+.toggle-button-selected {
+	background-color: #83B152;
+	border: 2px solid #7DA652;
+}
+
+.toggle-button-selected button {
+	left: 26px;
+	top: 0;
+	margin: 0;
+	border: none;
+	width: 24px;
+	height: 24px;
+	box-shadow: 0 0 4px rgba(0,0,0,0.1);
+}
+
+.uploadFrom, #imageUse {
+	margin: 20px 0;
+}
+
+#imageUse {
+	height: 25px;
+}
+
+#imageSelectorContainer li {
+	list-style-type: none;
+    text-align: right;
+    width: 50%;
+    margin: 0 auto;
+}
+
+#imageSelectorContainer span {
+	font-size: 13px;
+}
+
+.fileUpload {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+.fileUploadLabel, .thumb-image {
+	position: relative;
+	display: inline-block;
+    font-size: 1.25em;
+    border: 1px solid black;
+    cursor: pointer;
+    height: 100px;
+    width: 200px;
+    vertical-align: middle;
+    line-height: 100px;
+    margin: 8px;
+    text-align: center;
+    background: #f1f1f1;
+}
+
+.fileUploadLabel:hover {
+	border-color: grey;
+	color: grey;
+}
+
+.thumb-image {
+	position: absolute;
+    top: -1px;
+    left: -1px;
+    margin: 0;
+}
+
+#fileUploadLabel, #getImgurLabel {
+	height: 10px;
+	line-height: 10px;
+	border-radius: 1px;
+	border: solid #808080 1px;
+	background: #f1f1f1;
+	padding: 16px;
+	color: black;
+	cursor: pointer;
+	display: inline-block;
+}
+
+#imgurWrapper {
+	display: none;
+}
+
+#errorMessage, #imgurUrl p, #stepText, #counterValue {
+	font-size: 17px;
+}
+
+.workingWindowClose {
+	display: none;
+    margin: 0 auto;
+}
+
+#globalContext a {
+	color: white;
+	text-decoration: none;
+}
+
+/* Progress bar */
+#generateProgress {
+  display: block;
+  margin: 0 auto 30px;
+  width: 45%;
+  height: 8px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  color: #457898;
+}
+#generateProgress::-webkit-progress-bar {
+  background-color: #ededed;
+  border-radius: 2px;
+}
+#generateProgress::-webkit-progress-value {
+  border-radius: 2px;
+  background-color: #457898;
+}
+#generateProgress::-moz-progress-bar {
+  border-radius: 2px;
+}
+
+/* ---- Loader ---- from http://codepen.io/martinvd/pen/xbQJom */
+#loading, .loader {
+	position: relative;
+	left: calc(50% - 32px);
+	top: calc(50% - 32px);
+	color: white;
+	font-size: 15px;
+}
+.loaderWrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.5);
+	z-index: 9999;
+}
+.loader {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  perspective: 800px;
+}
+
+.inner {
+  position: absolute;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.inner.one {
+  left: 0%;
+  top: 0%;
+  animation: rotate-one 2s linear infinite;
+  border-bottom: 3px solid #EFEFFA;
+}
+
+.inner.two {
+  right: 0%;
+  top: 0%;
+  animation: rotate-two 2s linear infinite;
+  border-right: 3px solid #EFEFFA;
+}
+
+.inner.three {
+  right: 0%;
+  bottom: 0%;
+  animation: rotate-three 2s linear infinite;
+  border-top: 3px solid #EFEFFA;
+}
+
+@keyframes rotate-one {
+  0% {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg);
+  }
+}
+
+@keyframes rotate-two {
+  0% {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg);
+  }
+}
+
+@keyframes rotate-three {
+  0% {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+  }
+}
+#drawSection {
+	display: none;
+}
+
+#grid {
+	position: absolute;
+	border: 1px solid black;
+	top: 100px;
+	left: 65px;
+	z-index: 3;
+	pointer-events: none;
+	border-spacing: 0;
+	display: none;
+}
+
+#drawOptions>div {
+	position: absolute;
+	background-color: #757575;
+	z-index: 9999;
+}
+
+#drawOptionsLeft {
+	left: 0;
+	height: 100%;
+	width: 40px;
+}
+
+#icons {
+	padding-top: 60px;
+}
+
+#icons div {
+	width: 80%;
+	height: 32px;
+	margin: 0 auto 10px;
+}
+
+#drawOptionsTop {
+	top: 35px;
+	left: 40px;
+	height: 40px;
+	width: calc(100% - 40px);
+}
+
+#drawOptionsTopContainer {
+	margin: 8px 0 0 20px;
+}
+
+#drawOptionsTopContainer div {
+	margin-right: 10px;
+	display: inline-block;
+}
+
+#drawOptionsTop label, #strokeSizeOutput, #strokeSize, #strokeColor {
+	vertical-align: middle;
+}
+
+#strokeSize {
+	margin: 2px 10px;
+}
+
+#strokeColor {
+	border: none;
+	padding: 0;
+	margin-left: 5px;
+}
+
+#icons div:hover, #uploadLabel:hover {
+	box-shadow: 0 0 2px black;
+}
+
+#icons div:active, #uploadLabel:active {
+	box-shadow: inset 0 0 4px black;
+}
+
+#freeDraw {
+	background: url('img/pencil84.png') center center no-repeat;
+}
+
+#lineDraw {
+	background: url('img/straight16.png') center center no-repeat;
+}
+
+#paintBucket {
+	background: url('img/bucket.png') center center no-repeat;
+}
+
+#eraseDraw {
+	background: url('img/eraser.png') center center no-repeat;
+}
+
+#undo {
+	background: url('img/undo.png') center center no-repeat;
+}
+
+#redo {
+	background: url('img/redo.png') center center no-repeat;
+}
+
+#clearAll {
+	background: url('img/clear.png') center center no-repeat;
+}
+
+#uploadLabel {
+	background: url('img/upload.png') center center no-repeat;
+	padding: 17px 0 18px;
+	margin: 10px 4px;
+	display: block;
+}
+
+#upload {
+	position: fixed;
+	top: -1000px;
+}
+
+#download {
+	background: url('img/download2.png') center center no-repeat;
+}
+
+#gridToggle {
+	background: url('img/grid.png') center center no-repeat;
+}
+
+.activeDraw {
+	box-shadow: inset 0 0 1px 1px black;
+	background-color: #616161 !important;
+}
+
+#globeResize {
+	cursor: default;
+	height: 20px;
+	width: 20px;
+	position: absolute;
+	bottom: 5px;
+	left: -1px;
+	z-index: 9999;
+	background: url('img/resize.png') center center no-repeat;
+}
+
+#designArea {
+	float: right;
+	cursor: default;
+}
+
+table td {
+	border-right: 1px solid #DEDEDE;
+	border-bottom: 1px solid #DEDEDE;
+}
+#equator td {
+	border-bottom: 1px solid #A6A6A6;
+}
+
+canvas {
+	position: relative;
+}
+
+#globe {
+	position: absolute;
+	right: 10px;
+	top: 55px;
+	cursor: move;
+	z-index: 9999;
+}
+
+#flatCanvas, #tempCanvas, #gridCanvas {
+	position: absolute;
+	top: 100px;
+	left: 65px;
+}
+
+.colpick {
+	z-index: 99999 !important;
+}
+
+#mobileMenu {
+	display: none;
+    padding: 0 14px;
+    line-height: 35px;
+    cursor: pointer;
+    color: white;
+    font-size: 13px;
+}
+
+@media (max-width: 930px) {
+	#globalMenu > li#projections, #globalMenu > li#drawToggle {
+		display: none;
+	}
+}
+
+@media (max-width: 640px) {
+	nav {
+		float: left;
+	}
+
+	#globalMenu > li {
+		display: none;
+	}
+
+	#globalMenu > #helpabout, #globalMenu > #explore {
+		display: inline-block;
+	}
+}
