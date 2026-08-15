@@ -4,6 +4,8 @@ Spin the Micras map as a 3D globe, and measure the real distance between any two
 
 **Live: https://eddyplolz.github.io/micras-globe/**
 
+![The Micras map wrapped on a 3D globe with the lat/long grid enabled](img/preview.jpg)
+
 Micras is a shared, made-up world, and its map is flat. This tool wraps that flat map around a
 sphere so you can turn it, light it, and click two spots to see how far apart they actually are.
 
