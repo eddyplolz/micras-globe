@@ -136,7 +136,6 @@ function fileSelect(files) {
 					$("#imgCanvas").attr('src', file.src);
 					imageWidth = this.width;
 					imageHeight = this.height;
-		    		cToArray(canvas);
 				}
 				img.src = file.src;
 				if ($("#projectionArea").is(":visible")) {
@@ -202,7 +201,6 @@ function loadImgur(images) {
 				$("#imgCanvas").attr('src', result.sourceFile);
 				imageWidth = this.width;
 				imageHeight = this.height;
-				cToArray(canvas);
 			}
 			if (use == "night") {
 				nightMap = result;
@@ -631,10 +629,19 @@ function placeLine(point) {
 }
 
 function calcDistance() {
-	var radius = document.getElementById('radius').value;
-	var w = Math.sqrt( Math.pow(pointA['x'] - pointB['x'],2) + Math.pow(pointA['y'] - pointB['y'],2) + Math.pow(pointA['z'] - pointB['z'],2) );
-	var distance = 2 * radius * Math.asin(w / (2*radius));
-	distance = (distance / 100) * radius;
+	var radius = parseFloat(document.getElementById('radius').value);
+	// Chord (straight-line) length between the two picked surface points, in globe units.
+	var chord = Math.sqrt( Math.pow(pointA['x'] - pointB['x'],2) + Math.pow(pointA['y'] - pointB['y'],2) + Math.pow(pointA['z'] - pointB['z'],2) );
+	// Sphere radius the points sit on, derived from the points themselves (no magic constant).
+	var rA = Math.sqrt(pointA['x']*pointA['x'] + pointA['y']*pointA['y'] + pointA['z']*pointA['z']);
+	var rB = Math.sqrt(pointB['x']*pointB['x'] + pointB['y']*pointB['y'] + pointB['z']*pointB['z']);
+	var sphereR = (rA + rB) / 2;
+	// Great-circle arc = planetRadius * central angle, where the central angle comes from the chord:
+	//   theta = 2 * asin(chord / 2R).  The legacy code returned the chord itself (asin arg used the
+	//   planet radius, ~200x the globe radius, so asin(x)~=x and the arc collapsed to the chord),
+	//   which undercounts increasingly toward antipodes. clamp guards floating point at exact antipodes.
+	var theta = 2 * Math.asin( Math.min(1, chord / (2 * sphereR)) );
+	var distance = radius * theta;
 	$("#distance").text("Distance: " + +distance.toFixed(2) + " units");
 }
 
@@ -1141,51 +1148,6 @@ function updateAtmosphere(input) {
 	render();
 }
 
-function showDraw() {
-	analyticsEvent('Switch to sketch view');
-	$("#screenshotsContext").addClass('menuDisabled');
-	$("#drawToggle").removeClass('draw');
-	$("#drawToggle").text('Switch to 3D View');
-	window.removeEventListener('resize', windowResize, false);
-	$("#contextMenu").css('display', 'none');
-	$("#globalMenu > li").removeClass('menuSelected');
-	$("#projectionArea").hide();
-	$("#drawSection").show();
-	$("#globeCanvas").css({top:0,right:0,position: 'absolute'}).animate({
-		height: 200,
-		width: 245,
-		top: '100px',
-		right: '20px'
-	}, function() {
-		renderer.setSize(245,200);
-		camera.aspect = 245/200;
-		camera.updateProjectionMatrix();
-		render();
-	});
-
-}
-
-function hideDraw() {
-	$("#screenshotsContext").removeClass('menuDisabled');
-	$("#drawToggle").addClass('draw');
-	$("#drawToggle").text('Switch to Sketch View');
-	window.addEventListener('resize', windowResize, false);
-	$("#projectionArea").hide();
-	$("#globeCanvas").animate({
-		width: window.innerWidth,
-		height: window.innerHeight,
-		right: 0,
-		top: 0
-	}, function() {
-		$("#drawSection").hide();
-		$("#globeCanvas").css('position', 'static');
-		render();
-	});
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
-}
-
 function analyticsEvent(action) {
 	ga('send', 'event', 'Button Click', action);
 }
@@ -1198,7 +1160,7 @@ function showProjection() {
 	$("#globalMenu > li").removeClass('menuSelected');
 	$("#globalMenu > li").removeClass('menuSelected');
 	$("#projectionArea").show();
-	$("#globeCanvas, #drawSection").hide();
+	$("#globeCanvas").hide();
 	initializeProjection();
 }
 
@@ -1208,9 +1170,6 @@ function hideProjection() {
 	options.length = 0;
 	$("#projectionArea").hide();
 	$("#globeCanvas").show();
-	if ($("#globeCanvas").css('position') == 'absolute') {
-		$("#drawSection").show();
-	}
 }
 
 function initializeProjection() {
@@ -1447,9 +1406,6 @@ window.onload = function() {
 				$("#contextMenu > div").removeClass('submenuSelected');
 				$("#contextMenu > div." + $(this).attr('id')).addClass('submenuSelected');
 			}
-		}
-		else if ($(this).attr('id') == 'drawToggle') {
-			($(this).hasClass('draw')) ? showDraw() : hideDraw();
 		}
 		else if ($(this).attr('id') == 'projections') {
 			($("#projectionArea").is(':hidden')) ? showProjection() : hideProjection();

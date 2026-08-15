@@ -1,3 +1,14 @@
+/* Self-hosted Open Sans (Apache-2.0). Latin subset of the v44 variable font, which
+   covers the whole 400-700 weight range in a single file. Bundled at fonts/ so the
+   build makes no external requests; font-display:swap shows the fallback until it loads. */
+@font-face {
+	font-family: "Open Sans";
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+	src: url("../fonts/open-sans-latin.woff2") format("woff2");
+}
+
 html, body {
 	height: 100%;
 	margin: 0;

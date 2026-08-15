@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Micras Globe</title>
 	<meta name="description" content="View the Micras world map as a 3D globe and measure distances. Self-hosted, based on MapToGlobe.">
-	<!-- Google Fonts (Open Sans) request removed for a fully self-contained, self-hosted build; falls back to system sans-serif. -->
+	<!-- Open Sans is self-hosted (see @font-face in css/globe.css, fonts/open-sans-latin.woff2); no external font requests. -->
 	<link rel="stylesheet" href="css/globe.css" type="text/css">
 	<link rel="stylesheet" href="css/libraryStyles.css" type="text/css" />
 	<link rel="icon" href="img/icon.png" />
@@ -70,7 +70,6 @@
 			<!-- "Save" removed: it POSTed to the MapToGlobe server (share/key links) which a static self-host has no backend for. -->
 			<li id="screenshotsContext" class="menuDropdown">Screenshots</li>
 			<li id="animationsContext" class="menuDropdown">Animations</li>
-			<li id="drawToggle" class="draw menuSpecial menuDropdown">Switch to Sketch View</li>
 			<li id="projections" class="menuSpecial menuDropdown">Map Projections</li>
 			<li id="helpabout"><a href="/help" target="_blank">Help</a></li>
 			<li id="explore"><a href="/explore" target="_blank">Explore</a></li>
@@ -155,50 +154,12 @@
 		</div>
 	</div>
 	<canvas id="globeCanvas"></canvas>
-	<div id="drawSection">
-		<div id="drawOptions">
-			<div id="drawOptionsTop">
-				<div id="drawOptionsTopContainer">
-					<div>
-						<label for="strokeSize">Stroke Size:</label><input type="range" min="1 max=50 value=1 id=strokeSize" onchange="strokeSizeChange(value)"><output for="strokeSize" id="strokeSizeOutput">1</output>
-					</div>
-					<div>
-						<label for="strokeColor">Stroke Color:</label><input id="strokeColor" type="color" onchange="setStrokeColor(value)">
-					</div>
-				</div>
-			</div>
-			<div id="drawOptionsLeft">
-				<div id="icons">
-					<div id="freeDraw" class="activeDraw" title="pen"></div>
-					<div id="lineDraw" title="line"></div>
-					<div id="paintBucket" title="bucket"></div>
-					<div id="eraseDraw" title="eraser"></div>
-					<div id="undo" title="Undo"></div>
-					<div id="clearAll" title="Clear All"></div>
-					<div id="gridToggle" title="Toggle Grid"></div>
-					<div id="download" title="Download sketch image"><a href="" id="exportLink"></a></div>
-				</div>
-			</div>
-		</div>
-		<div id="designArea">
-			<table id="grid">
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr id="equator"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-			</table>
-			<img id="imgCanvas">
-			<canvas id="flatCanvas"></canvas>
-			<canvas id="gridCanvas"></canvas>
-		</div>
+	<!-- Offscreen canvases retained for the "Show Lat/Long Grid" overlay (see js/draw.js).
+	     Formerly inside the removed Sketch View; kept hidden as texture sources only. -->
+	<div id="gridSupport" style="display:none">
+		<img id="imgCanvas">
+		<canvas id="flatCanvas"></canvas>
+		<canvas id="gridCanvas"></canvas>
 	</div>
 	<div id="projectionArea">
 		<div id="projectionMenu">
@@ -253,7 +214,6 @@
 			<label><input type="checkbox" id="genbw" />Generate black & white?</label><br><br>
 			<input type="button" id="worldReset" value="Reset to Defaults" /><br>
 			<input type="button" id="worldDownload" value="Download 2D Map" disabled="disabled" autocomplete="off" /><br>
-			<p>Click on "Switch to Sketch View" in the menu above to view the 2D map</p>
 			<button data-remodal-action="cancel" class="remodal-cancel">Cancel</button>
 			<button value="Generate" onclick="generateWorld()" data-remodal-action="confirm" class="remodal-confirm">Generate</button>
 		</div>
