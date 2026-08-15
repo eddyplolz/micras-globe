@@ -30,6 +30,7 @@
 	<script src="js/remodal.min.js" defer></script>
 	<script src="js/ui.js" defer></script>
 	<script src="js/micras-defaults.js" defer></script>
+	<script src="js/measure.js" defer></script>
 	<!-- Google Analytics (UA-1986390-4) removed for the self-hosted Micras build.
 	     ga() is stubbed to a no-op so the app's analyticsEvent() calls stay harmless. -->
 	<script>
@@ -105,8 +106,12 @@
 				</div>
 				<input type="button" id="measure" value="Measure distance" onclick="measureToggle()" />
 				<div id="measureBox">
-					<label>Radius: <input type="text" id="radius" value="100"> units</label><br>
+					<label>Planet radius: <input type="text" id="radius" value="100"> km</label><br>
 					<span id="distance">Click two spots on the globe</span>
+					<div id="travelBox">
+						<label>Travel time by <select id="travelMode"></select></label><br>
+						<label>at <input type="text" id="travelSpeed" value="30"> km/day &rarr; <span id="travelTime">&mdash;</span></label>
+					</div>
 				</div>
 				<h2>Axial Tilt</h2>
 				<input type="range" id="axialTilt" value="0" min="-90" max="90" step="1" /><output for="axialTilt" class="axialTiltLabel">0°</output><br>

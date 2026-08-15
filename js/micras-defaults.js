@@ -6,11 +6,11 @@
    On page load it:
      1. Sets the Measure-distance radius to Micras's planetary radius.
         Micras is canonically "approximately the same size as Earth" (MCS), so
-        6371 (km) makes the measure tool read in kilometres. The legacy
-        calcDistance() reduces to ~= radius * central-angle for regional spans,
-        so this is accurate for normal (regional/continental) measurements;
-        only near-antipodal spans undercount (a chord approximation baked into
-        the legacy formula — a Phase-4 calibration candidate, not a Phase-2 bug).
+        6371 (km) makes the measure tool read in kilometres. calcDistance() now
+        computes a true great-circle arc (radius * central angle), accurate at
+        all ranges including near-antipodal (the legacy chord approximation was
+        fixed in Phase 4). The Measurement Pack (js/measure.js) layers km/mi/nm
+        and travel-time readouts on top.
      2. Loads the current Micras world map as the default surface texture via the
         app's own fileSelect(), so the globe opens showing Micras with no upload.
    ------------------------------------------------------------------------- */

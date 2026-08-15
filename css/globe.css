@@ -122,6 +122,23 @@ h1 a {
 	margin: 5px 20px 10px;
 	display: none;
 }
+#distance {
+	display: inline-block;
+	margin: 4px 0 2px;
+}
+#travelBox {
+	margin-top: 8px;
+	padding-top: 6px;
+	border-top: 1px solid rgba(255, 255, 255, 0.15);
+	font-size: 13px;
+	line-height: 1.7;
+}
+#travelSpeed {
+	width: 46px;
+}
+#travelTime {
+	font-weight: bold;
+}
 #gridSettings input {
 	width: 30px;
 }

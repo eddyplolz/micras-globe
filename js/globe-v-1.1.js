@@ -642,7 +642,13 @@ function calcDistance() {
 	//   which undercounts increasingly toward antipodes. clamp guards floating point at exact antipodes.
 	var theta = 2 * Math.asin( Math.min(1, chord / (2 * sphereR)) );
 	var distance = radius * theta;
-	$("#distance").text("Distance: " + +distance.toFixed(2) + " units");
+	// The Measurement Pack (js/measure.js), when present, renders the km/mi/nm
+	// readout and travel-time estimate; fall back to the legacy single-unit text.
+	if (typeof updateMeasureReadout === 'function') {
+		updateMeasureReadout(distance);
+	} else {
+		$("#distance").text("Distance: " + +distance.toFixed(2) + " units");
+	}
 }
 
 function CartToSphere(x,y,z) {
