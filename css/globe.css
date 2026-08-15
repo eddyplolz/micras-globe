@@ -51,6 +51,26 @@ h1 a {
 	text-decoration: none;
 	color: white;
 }
+#siteLinks {
+	z-index: 999999;
+	position: absolute;
+	bottom: 4px;
+	right: 12px;
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.75);
+}
+#siteLinks a {
+	color: rgba(255, 255, 255, 0.85);
+	text-decoration: none;
+}
+#siteLinks a:hover {
+	text-decoration: underline;
+	color: #fff;
+}
+#siteLinks .sep {
+	margin: 0 6px;
+	opacity: 0.55;
+}
 #globalMenu {
 	display: inline-block;
 	margin: 0;
