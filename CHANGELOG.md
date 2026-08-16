@@ -15,6 +15,9 @@ All notable changes to Micras Globe. Newest first.
   to Micras, MicrasWiki, the Micras Cartography Society, and the community forum.
 
 ### Changed
+- **Range ring colors made easier to see.** Missile-range rings are now magenta instead of light
+  blue, so they stand out against the ocean; the nuclear fireball ring is white and the light-blast
+  ring brighter.
 - **Menus reorganized.** The single, over-long Options panel is split into focused tabs —
   **Measure**, **View**, **Environment**, and **Terrain** — so no panel runs off the bottom of the
   screen. Panels now scroll if they are ever taller than the window.

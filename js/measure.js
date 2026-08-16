@@ -212,10 +212,10 @@
 
   // Missile presets — representative maximum ranges (single ring each).
   var RING_PRESETS = {
-    srbm: { title: 'SRBM range',  rings: [{ km: 1000,  color: 0x4FC3F7, label: 'SRBM ~1,000 km' }] },
-    mrbm: { title: 'MRBM range',  rings: [{ km: 3000,  color: 0x4FC3F7, label: 'MRBM ~3,000 km' }] },
-    irbm: { title: 'IRBM range',  rings: [{ km: 5500,  color: 0x4FC3F7, label: 'IRBM ~5,500 km' }] },
-    icbm: { title: 'ICBM range',  rings: [{ km: 12000, color: 0x4FC3F7, label: 'ICBM ~12,000 km' }] }
+    srbm: { title: 'SRBM range',  rings: [{ km: 1000,  color: 0xFF10D0, label: 'SRBM ~1,000 km' }] },
+    mrbm: { title: 'MRBM range',  rings: [{ km: 3000,  color: 0xFF10D0, label: 'MRBM ~3,000 km' }] },
+    irbm: { title: 'IRBM range',  rings: [{ km: 5500,  color: 0xFF10D0, label: 'IRBM ~5,500 km' }] },
+    icbm: { title: 'ICBM range',  rings: [{ km: 12000, color: 0xFF10D0, label: 'ICBM ~12,000 km' }] }
   };
 
   // Nuclear blast rings by yield (kt). Overpressure radii use cube-root scaling
@@ -224,11 +224,11 @@
   function nukeRings(kt) {
     var cbrt = Math.pow(kt, 1 / 3);
     return [
-      { km: 0.056 * Math.pow(kt, 0.40), color: 0xFFF176, label: 'Fireball' },
+      { km: 0.056 * Math.pow(kt, 0.40), color: 0xFFFFFF, label: 'Fireball' },
       { km: 0.14  * cbrt,               color: 0xFF7043, label: 'Severe blast ~20 psi' },
       { km: 0.31  * cbrt,               color: 0xFFB300, label: 'Moderate blast ~5 psi' },
       { km: 0.67  * Math.pow(kt, 0.41), color: 0xEF5350, label: 'Thermal, 3rd-degree burns' },
-      { km: 0.79  * cbrt,               color: 0xFFF59D, label: 'Light blast ~1 psi' }
+      { km: 0.79  * cbrt,               color: 0xFFD24A, label: 'Light blast ~1 psi' }
     ];
   }
   var NUKE_YIELDS = {
@@ -280,7 +280,7 @@
       if (theta > Math.PI) theta = Math.PI; // cap at the antipode
       var geom = new THREE.Geometry();
       geom.vertices = smallCircle(frame, theta, 96);
-      var line = new THREE.Line(geom, new THREE.LineBasicMaterial({ color: rings[i].color }));
+      var line = new THREE.Line(geom, new THREE.LineBasicMaterial({ color: rings[i].color, linewidth: 2 }));
       scene.add(line);
       ringLines.push(line);
     }
