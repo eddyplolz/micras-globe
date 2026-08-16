@@ -21,6 +21,10 @@ All notable changes to Micras Globe. Newest first.
 - **Corrected the planet radius to canon.** The globe now uses Micras's canonical radius of
   **6,875 km** (per the MicrasWiki "Micras" infobox) instead of Earth's 6,371 km. Every distance,
   area, and travel-time reading was about 8% too small; they are now to scale.
+- **Realistic modern travel times.** Car, railway, and high-speed rail were treated as slow daily
+  distances, so short trips read far too long (400 km by high-speed rail showed 6+ hours). They now
+  use real cruising speeds (~90 / ~100 / ~300 km/h), so that trip reads about 1.3 hours. Muscle-powered
+  modes still measure in realistic daily marching distances.
 
 ### Changed
 - **Range ring colors made easier to see.** Missile-range rings are now magenta instead of light

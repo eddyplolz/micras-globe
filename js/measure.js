@@ -15,20 +15,21 @@
   var KM_TO_MI = 0.621371;
   var KM_TO_NM = 0.539957; // nautical miles
 
-  // Travel presets — sustained cross-country speed in km/day. Editable in the UI.
-  // Pre-modern rows are realistic daily progress (a day's march/ride/sail, with
-  // rest); modern powered rows assume near-continuous travel.
+  // Travel presets — speed in km/day. Editable in the UI. Muscle-powered rows are
+  // realistic daily campaign distances (a day's march or ride, with rest), so
+  // "how long to cross X" reads in days. Every mechanical mode is a sustained
+  // cruising speed (km/h x 24), so a short trip reads like a nonstop journey.
   var TRAVEL_PRESETS = [
-    { name: 'Marching army',    kmday: 30 },
-    { name: 'On horseback',     kmday: 60 },
-    { name: 'Sailing ship',     kmday: 220 },     // ~5 knots, age of sail
-    { name: 'Steamship',        kmday: 500 },
-    { name: 'Railway',          kmday: 800 },
-    { name: 'Automobile',       kmday: 900 },
+    { name: 'Marching army',    kmday: 30 },      // ~30 km/day campaign pace
+    { name: 'On horseback',     kmday: 60 },      // ~60 km/day campaign pace
+    { name: 'Sailing ship',     kmday: 220 },     // ~5 knots, continuous
+    { name: 'Steamship',        kmday: 500 },     // ~11 knots, continuous
     { name: 'Container ship',   kmday: 1050 },    // ~24 knots, continuous
-    { name: 'High-speed rail',  kmday: 1500 },    // a day's HSR journey, with stops
-    { name: 'Airliner',         kmday: 21600 },   // ~900 km/h, continuous
-    { name: 'Supersonic jet',   kmday: 52000 },   // ~2,150 km/h (Mach 2), continuous
+    { name: 'Automobile',       kmday: 2160 },    // ~90 km/h
+    { name: 'Railway',          kmday: 2400 },    // ~100 km/h
+    { name: 'High-speed rail',  kmday: 7200 },    // ~300 km/h
+    { name: 'Airliner',         kmday: 21600 },   // ~900 km/h
+    { name: 'Supersonic jet',   kmday: 52000 },   // ~2,150 km/h (Mach 2)
     { name: 'Orbital (LEO)',    kmday: 674000 }   // ~7.8 km/s low-orbit ground track
   ];
 
