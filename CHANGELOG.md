@@ -2,6 +2,15 @@
 
 All notable changes to Micras Globe. Newest first.
 
+## 2026-08-16
+
+### Changed
+- **Menus reorganized.** The single, over-long Options panel is split into focused tabs —
+  **Measure**, **View**, **Environment**, and **Terrain** — so no panel runs off the bottom of the
+  screen. Panels now scroll if they are ever taller than the window.
+- **Refreshed the interface** with a cleaner dark look: rounded panels, clearer section headers,
+  and tidier controls.
+
 ## 2026-08-15
 
 ### Added

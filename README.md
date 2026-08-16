@@ -25,8 +25,11 @@ sphere so you can turn it, light it, and click two spots to see how far apart th
 - Rotate: left-click and drag.
 - Zoom: mouse wheel.
 - Pan: right-click and drag.
-- Measure: open **Options**, click **Measure distance**, then pick a mode — **Distance** (two points),
-  **Path** (click many points for a running total), or **Area** (enclose a region to get its size).
+- Measure: open the **Measure** tab, click **Measure distance**, then pick a mode — **Distance** (two
+  points), **Path** (click many points for a running total), or **Area** (enclose a region for its size).
+- Menus: the controls are grouped into tabs — **Measure**, **View** (background, pole, grid),
+  **Environment** (atmosphere, sun, light, tilt), and **Terrain** — plus Images, Generate, Screenshots,
+  Animations, and Map Projections.
 - Use a different map: open **Images** and upload any 2:1 (equirectangular) picture.
 
 A note on the numbers: distances come out in kilometers, with miles and nautical miles alongside,

@@ -95,13 +95,22 @@ h1 a {
 	position: absolute;
 	top: 35px;
 	left: 10px;
-	width: 240px;
-	background: #424242;
-	padding: 10px 0 15px 12px;
-	box-shadow: inset 0 5px 6px -6px #3f51b5, 0px 2px 4px -1px #454545;
+	width: 252px;
+	max-height: calc(100vh - 46px);
+	overflow-y: auto;
+	overflow-x: hidden;
+	background: #2f3136;
+	padding: 2px 14px 16px;
+	border-radius: 0 0 10px 10px;
+	box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
 	z-index: 10000;
-	color: white;
+	color: #e8e8e8;
+	accent-color: #53A3FE;
 }
+/* Thin, unobtrusive scrollbar when a panel is taller than the viewport. */
+#contextMenu::-webkit-scrollbar { width: 8px; }
+#contextMenu::-webkit-scrollbar-thumb { background: #55585e; border-radius: 4px; }
+#contextMenu::-webkit-scrollbar-track { background: transparent; }
 #contextMenu a {
 	color: #00A2E8;
 }
@@ -168,9 +177,72 @@ h1 a {
 	width: 30px;
 }
 h2 {
-	margin: 13px 12px 7px;
-	font: normal 16px "Open Sans";
+	margin: 15px 0 6px;
+	font: 600 12px "Open Sans";
+	text-transform: uppercase;
+	letter-spacing: 0.6px;
+	color: #9fb8d6;
 }
+
+/* ---- Modern refresh: themed-tab panels ------------------------------------ */
+.panelTitle {
+	margin: 10px 0 12px;
+	font: 600 15px "Open Sans";
+	color: #ffffff;
+	letter-spacing: 0.3px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+#contextMenu label {
+	font-size: 13px;
+	line-height: 1.95;
+	color: #dcdcdc;
+}
+#contextMenu > div > label {
+	display: block;
+}
+#contextMenu input[type="checkbox"],
+#contextMenu input[type="radio"] {
+	margin-right: 6px;
+	vertical-align: -1px;
+}
+#contextMenu input[type="text"],
+#contextMenu select {
+	background: #3a3d42;
+	color: #eee;
+	border: 1px solid #55585e;
+	border-radius: 4px;
+	padding: 3px 6px;
+	font-size: 13px;
+}
+#contextMenu select { cursor: pointer; }
+#contextMenu input[type="range"] {
+	width: 100%;
+	margin: 8px 0;
+	vertical-align: middle;
+}
+#contextMenu .sunPosition { width: 200px; }
+#contextMenu input[type="button"],
+#contextMenu button {
+	background: #53A3FE;
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	padding: 6px 12px;
+	font-size: 13px;
+	cursor: pointer;
+	margin: 5px 0;
+	transition: background 0.15s ease;
+}
+#contextMenu input[type="button"]:hover,
+#contextMenu button:hover {
+	background: #3d8ce8;
+}
+#pathControls button {
+	padding: 4px 10px;
+	background: #4a4d52;
+}
+#pathControls button:hover { background: #5a5e64; }
 p, #imgurURL, label, span {
 	font-size: 12px;
 }

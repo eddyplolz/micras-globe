@@ -72,7 +72,10 @@
 		<ul id="globalMenu">
 			<li id="imagesContext">Images</li>
 			<li id="generateContext">Generate</li>
-			<li id="optionsContext" class="menuDropdown">Options</li>
+			<li id="measureContext" class="menuDropdown">Measure</li>
+			<li id="viewContext" class="menuDropdown">View</li>
+			<li id="environmentContext" class="menuDropdown">Environment</li>
+			<li id="terrainContext" class="menuDropdown">Terrain</li>
 			<!-- "Save" removed: it POSTed to the MapToGlobe server (share/key links) which a static self-host has no backend for. -->
 			<li id="screenshotsContext" class="menuDropdown">Screenshots</li>
 			<li id="animationsContext" class="menuDropdown">Animations</li>
@@ -82,70 +85,76 @@
 		</ul>
 	</div>
 	<div id="contextMenu">
-		<div class="optionsContext">
-			<div id="optionsBox">
-				<label><input type="checkbox" id="blackBG" />Solid black background</label><br>
-				<label><input type="checkbox" id="bgTransparent" onclick="toggleBGTransparent(this)" />Toggle Transparent Background</label><br>
-				<label><input type="checkbox" id="poleOption" onclick="checkPoleOption(this)" />Show Pole Line</label><br>
-				<label><input type="checkbox" id="showGrid">Show Lat/Long Grid</label><br>
-				<div id="gridSettings">
-					<label>Meridians interval</label><br>
-					<input type="text" id="meridianInt" value="10" /><span> degrees</span><br>
-					<label>Parallels interval</label><br>
-					<input type="text" id="parallelInt" value="10" /><span> degrees</span><br>
-					<label>Color: <div id="gridColor"></div></label>
+		<div class="measureContext">
+			<h3 class="panelTitle">Measure</h3>
+			<input type="button" id="measure" value="Measure distance" onclick="measureToggle()" />
+			<div id="measureBox">
+				<label>Planet radius: <input type="text" id="radius" value="100"> km</label><br>
+				<div id="measureModes">
+					<label><input type="radio" name="measureMode" value="distance" checked> Distance</label>
+					<label><input type="radio" name="measureMode" value="path"> Path</label>
+					<label><input type="radio" name="measureMode" value="area"> Area</label>
 				</div>
-				<label><input type="checkbox" id="atmosphere" onclick="atmosphereToggle(this)" />Show Atmosphere</label><br>
-				<div id="atmosphereSettings">
-					<!--<label>Fader 1: <input type="range" id="atmosphereC" value="1" min="0.7" max="1" step="0.01" onchange="updateAtmosphere(this)" /></label><br>
-					<label>Fader 2: <input type="range" id="atmosphereP" value="10" min="0" max="20" step="0.5" onchange="updateAtmosphere(this)" /></label>-->
-					<label>Night-side darkness<input type="range" class="atmosphereSettings" id="nightDarkness" min="0" max="2" step="0.05" value="1"></label><br>
-					<label>Rayleigh Scattering<input type="range" class="atmosphereSettings" id="rScattering" min="0" max="0.01" step="0.000001" value="0.0025"></label><br>
-					<label>Mie Scattering<input type="range" class="atmosphereSettings" id="mScattering" min="0" max="0.1" step="0.000001" value="0.0010"></label><br>
-					<input type="button" id="colorPick" value="Color" />
+				<span id="distance">Click two spots on the globe</span>
+				<div id="pathControls" style="display:none">
+					<button type="button" id="measureUndo">Undo point</button>
+					<button type="button" id="measureClear">Clear</button>
 				</div>
-				<input type="button" id="measure" value="Measure distance" onclick="measureToggle()" />
-				<div id="measureBox">
-					<label>Planet radius: <input type="text" id="radius" value="100"> km</label><br>
-					<div id="measureModes">
-						<label><input type="radio" name="measureMode" value="distance" checked> Distance</label>
-						<label><input type="radio" name="measureMode" value="path"> Path</label>
-						<label><input type="radio" name="measureMode" value="area"> Area</label>
-					</div>
-					<span id="distance">Click two spots on the globe</span>
-					<div id="pathControls" style="display:none">
-						<button type="button" id="measureUndo">Undo point</button>
-						<button type="button" id="measureClear">Clear</button>
-					</div>
-					<div id="coordBox">
-						<div>From: <span id="coordA">&mdash;</span></div>
-						<div>To: <span id="coordB">&mdash;</span></div>
-						<div>Bearing: <span id="bearing">&mdash;</span></div>
-					</div>
-					<div id="travelBox">
-						<label>Travel time by <select id="travelMode"></select></label><br>
-						<label>at <input type="text" id="travelSpeed" value="30"> km/day &rarr; <span id="travelTime">&mdash;</span></label>
-					</div>
+				<div id="coordBox">
+					<div>From: <span id="coordA">&mdash;</span></div>
+					<div>To: <span id="coordB">&mdash;</span></div>
+					<div>Bearing: <span id="bearing">&mdash;</span></div>
 				</div>
-				<h2>Axial Tilt</h2>
-				<input type="range" id="axialTilt" value="0" min="-90" max="90" step="1" /><output for="axialTilt" class="axialTiltLabel">0°</output><br>
-				<h2>Sun Position</h2>
-				<span>X: </span><input type="range" class="sunPosition" id="sunPosX" value="6000" min="-6000" max="6000" /><br>
-				<span>Y: </span><input type="range" class="sunPosition" id="sunPosY" value="0" min="-6000" max="6000" /><br>
-				<span>Z: </span><input type="range" class="sunPosition" id="sunPosZ" value="0" min="-6000" max="6000" /><br>
-				<input type="button" id="sunReset" onclick="resetSun(this)" value="Reset Sun Position" /><br>
-				<label>Light Intensity</label><br>
-				<input type="range" id="sunIntensity" value="1" min="0" max="5" step="0.01" oninput="changeLightInt(value)" /><br>
-				<label>Background View</label><br>
-				<label><input type="radio" name="bgType" id="bg2d" checked="checked" />2D</label><br>
-				<label><input type="radio" name="bgType" id="bg3d" />3D</label><br>
-				<div id="heightOptions">
-					<label>Height Map Method</label><br>
-					<label><input type="radio" name="heightMethod" id="bumpHeight" checked="checked" />2D</label><br>
-					<label><input type="radio" name="heightMethod" id="Vheight" />3D</label><br>
-					<label>Heightmap Scale</label><br>
-					<input type="range" id="heightScale" value="10" min="0" max="50" step="1" oninput="heightScaleChange(value)" />
+				<div id="travelBox">
+					<label>Travel time by <select id="travelMode"></select></label><br>
+					<label>at <input type="text" id="travelSpeed" value="30"> km/day &rarr; <span id="travelTime">&mdash;</span></label>
 				</div>
+			</div>
+		</div>
+		<div class="viewContext">
+			<h3 class="panelTitle">View</h3>
+			<label><input type="checkbox" id="blackBG" />Solid black background</label><br>
+			<label><input type="checkbox" id="bgTransparent" onclick="toggleBGTransparent(this)" />Toggle Transparent Background</label><br>
+			<label><input type="checkbox" id="poleOption" onclick="checkPoleOption(this)" />Show Pole Line</label><br>
+			<label><input type="checkbox" id="showGrid">Show Lat/Long Grid</label><br>
+			<div id="gridSettings">
+				<label>Meridians interval</label><br>
+				<input type="text" id="meridianInt" value="10" /><span> degrees</span><br>
+				<label>Parallels interval</label><br>
+				<input type="text" id="parallelInt" value="10" /><span> degrees</span><br>
+				<label>Color: <div id="gridColor"></div></label>
+			</div>
+		</div>
+		<div class="environmentContext">
+			<h3 class="panelTitle">Environment</h3>
+			<label><input type="checkbox" id="atmosphere" onclick="atmosphereToggle(this)" />Show Atmosphere</label><br>
+			<div id="atmosphereSettings">
+				<label>Night-side darkness<input type="range" class="atmosphereSettings" id="nightDarkness" min="0" max="2" step="0.05" value="1"></label><br>
+				<label>Rayleigh Scattering<input type="range" class="atmosphereSettings" id="rScattering" min="0" max="0.01" step="0.000001" value="0.0025"></label><br>
+				<label>Mie Scattering<input type="range" class="atmosphereSettings" id="mScattering" min="0" max="0.1" step="0.000001" value="0.0010"></label><br>
+				<input type="button" id="colorPick" value="Color" />
+			</div>
+			<h2>Axial Tilt</h2>
+			<input type="range" id="axialTilt" value="0" min="-90" max="90" step="1" /><output for="axialTilt" class="axialTiltLabel">0&deg;</output><br>
+			<h2>Sun Position</h2>
+			<span>X: </span><input type="range" class="sunPosition" id="sunPosX" value="6000" min="-6000" max="6000" /><br>
+			<span>Y: </span><input type="range" class="sunPosition" id="sunPosY" value="0" min="-6000" max="6000" /><br>
+			<span>Z: </span><input type="range" class="sunPosition" id="sunPosZ" value="0" min="-6000" max="6000" /><br>
+			<input type="button" id="sunReset" onclick="resetSun(this)" value="Reset Sun Position" /><br>
+			<label>Light Intensity</label><br>
+			<input type="range" id="sunIntensity" value="1" min="0" max="5" step="0.01" oninput="changeLightInt(value)" /><br>
+		</div>
+		<div class="terrainContext">
+			<h3 class="panelTitle">Terrain</h3>
+			<label>Background View</label><br>
+			<label><input type="radio" name="bgType" id="bg2d" checked="checked" />2D</label><br>
+			<label><input type="radio" name="bgType" id="bg3d" />3D</label><br>
+			<div id="heightOptions">
+				<label>Height Map Method</label><br>
+				<label><input type="radio" name="heightMethod" id="bumpHeight" checked="checked" />2D</label><br>
+				<label><input type="radio" name="heightMethod" id="Vheight" />3D</label><br>
+				<label>Heightmap Scale</label><br>
+				<input type="range" id="heightScale" value="10" min="0" max="50" step="1" oninput="heightScaleChange(value)" />
 			</div>
 		</div>
 		<div class="screenshotsContext">
