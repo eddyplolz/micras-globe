@@ -47,8 +47,8 @@ Explore Micras:
 The controls sit in tabs: Measure, View, Environment, Terrain, plus Images, Generate, Screenshots,
 Animations, and Map Projections.
 
-About the numbers: distances are true great-circle and accurate at every range, because Micras is
-about Earth-sized (radius around 6,371 km). Latitude runs from the pole. Longitude is measured east or
+About the numbers: distances are true great-circle and accurate at every range, using Micras's
+canonical planetary radius of 6,875 km (per the MicrasWiki "Micras" infobox). Latitude runs from the pole. Longitude is measured east or
 west of the map's center, a convention of this tool since Micras has no official prime meridian.
 
 ## Run it yourself

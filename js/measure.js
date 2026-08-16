@@ -207,7 +207,7 @@
 
   function planetRadiusKm() {
     var r = parseFloat(document.getElementById('radius').value);
-    return (isFinite(r) && r > 0) ? r : 6371;
+    return (isFinite(r) && r > 0) ? r : 6875;  // canonical Micras radius (MicrasWiki)
   }
 
   // --- Geodesic helpers (for the fallout plume) -------------------------------

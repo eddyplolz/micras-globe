@@ -17,6 +17,11 @@ All notable changes to Micras Globe. Newest first.
 - **"What is Micras?" section in the README**, introducing the shared world to newcomers, plus links
   to Micras, MicrasWiki, the Micras Cartography Society, and the community forum.
 
+### Fixed
+- **Corrected the planet radius to canon.** The globe now uses Micras's canonical radius of
+  **6,875 km** (per the MicrasWiki "Micras" infobox) instead of Earth's 6,371 km. Every distance,
+  area, and travel-time reading was about 8% too small; they are now to scale.
+
 ### Changed
 - **Range ring colors made easier to see.** Missile-range rings are now magenta instead of light
   blue, so they stand out against the ocean; the nuclear fireball ring is white and the light-blast

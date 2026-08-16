@@ -4,18 +4,18 @@
    customizations live in one auditable place.
 
    On page load it:
-     1. Sets the Measure-distance radius to Micras's planetary radius.
-        Micras is canonically "approximately the same size as Earth" (MCS), so
-        6371 (km) makes the measure tool read in kilometres. calcDistance() now
-        computes a true great-circle arc (radius * central angle), accurate at
-        all ranges including near-antipodal (the legacy chord approximation was
-        fixed in Phase 4). The Measurement Pack (js/measure.js) layers km/mi/nm
-        and travel-time readouts on top.
+     1. Sets the Measure-distance radius to Micras's planetary radius. The
+        canonical figure is 6,875 km (MicrasWiki, "Micras" infobox: Radius (Km)
+        6,875 — https://micras.org/mwiki/Micras), so 6875 makes the measure tool
+        read in kilometres. calcDistance() now computes a true great-circle arc
+        (radius * central angle), accurate at all ranges including near-antipodal
+        (the legacy chord approximation was fixed in Phase 4). The Measurement
+        Pack (js/measure.js) layers km/mi/nm and travel-time readouts on top.
      2. Loads the current Micras world map as the default surface texture via the
         app's own fileSelect(), so the globe opens showing Micras with no upload.
    ------------------------------------------------------------------------- */
 (function () {
-  var MICRAS_RADIUS = 6371;           // km; Micras ~= Earth
+  var MICRAS_RADIUS = 6875;           // km; canonical Micras radius (MicrasWiki "Micras" infobox)
   var MICRAS_MAP = 'img/micras-map.png';
 
   function applyMicrasDefaults() {
