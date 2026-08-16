@@ -71,6 +71,19 @@ h1 a {
 	margin: 0 6px;
 	opacity: 0.55;
 }
+#disclaimer {
+	z-index: 999999;
+	position: absolute;
+	bottom: 5px;
+	left: 50%;
+	transform: translateX(-50%);
+	max-width: 56%;
+	text-align: center;
+	font-size: 11.5px;
+	line-height: 1.35;
+	color: rgba(255, 255, 255, 0.5);
+	pointer-events: none;
+}
 #globalMenu {
 	display: inline-block;
 	margin: 0;

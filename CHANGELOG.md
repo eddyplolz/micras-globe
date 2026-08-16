@@ -5,6 +5,8 @@ All notable changes to Micras Globe. Newest first.
 ## 2026-08-16
 
 ### Added
+- **Footer disclaimer.** A short note in the bottom bar explains that distances are approximate (based
+  on Micras's canonical 6,875 km radius) and that travel-time estimates are a work in progress.
 - **Nuclear fallout plume.** A new Range Rings preset draws the downwind contamination footprint from
   ground zero — a teardrop of dose-rate bands (lethal / severe / detectable) stretching in the wind
   direction and speed you set. Illustrative, not a real fallout simulation.
