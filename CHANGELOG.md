@@ -5,6 +5,9 @@ All notable changes to Micras Globe. Newest first.
 ## 2026-08-16
 
 ### Added
+- **Nuclear fallout plume.** A new Range Rings preset draws the downwind contamination footprint from
+  ground zero — a teardrop of dose-rate bands (lethal / severe / detectable) stretching in the wind
+  direction and speed you set. Illustrative, not a real fallout simulation.
 - **Range Rings.** A new measure mode: click a center point and draw a circle at a chosen radius.
   Presets cover **missile ranges** (SRBM/MRBM/IRBM/ICBM), **nuclear blast rings by yield** (fireball,
   overpressure, and thermal radii — approximate, for scale), a **custom radius**, and a **launch site**

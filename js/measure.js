@@ -210,6 +210,72 @@
     return (isFinite(r) && r > 0) ? r : 6371;
   }
 
+  // --- Geodesic helpers (for the fallout plume) -------------------------------
+  // Inverse of geoCoords: a lat/long back to a world-space surface point (lifted
+  // to 101), through the sphere's current rotation/tilt.
+  function latLonToWorld(lat, lon) {
+    var la = lat * Math.PI / 180, lo = lon * Math.PI / 180;
+    var v = new THREE.Vector3(Math.cos(la) * Math.cos(lo), Math.sin(la), -Math.cos(la) * Math.sin(lo));
+    sphere.updateMatrixWorld();
+    sphere.localToWorld(v);
+    return v.normalize().multiplyScalar(101);
+  }
+
+  // Direct geodesic: the lat/long reached from (lat,lon) on compass bearing brgDeg
+  // after distKm along the surface (same bearing convention as bearing()).
+  function destPoint(lat, lon, brgDeg, distKm) {
+    var d = distKm / planetRadiusKm();
+    var la1 = lat * Math.PI / 180, lo1 = lon * Math.PI / 180, th = brgDeg * Math.PI / 180;
+    var la2 = Math.asin(Math.min(1, Math.max(-1,
+      Math.sin(la1) * Math.cos(d) + Math.cos(la1) * Math.sin(d) * Math.cos(th))));
+    var lo2 = lo1 + Math.atan2(Math.sin(th) * Math.sin(d) * Math.cos(la1),
+      Math.cos(d) - Math.sin(la1) * Math.sin(la2));
+    return { lat: la2 * 180 / Math.PI, lon: lo2 * 180 / Math.PI };
+  }
+
+  // Nuclear fallout — a downwind contamination plume drawn as dose-rate contours.
+  // Illustrative parametric model (NOT a real fallout simulation): each band's
+  // downwind length scales with sqrt(yield) and wind speed, its width with
+  // sqrt(yield). Base figures are for ~1 Mt at 24 km/h wind.
+  var FALLOUT_YIELDS = {
+    fallout20:   { title: '20 kt fallout', kt: 20 },
+    fallout1mt:  { title: '1 Mt fallout',  kt: 1000 },
+    fallout50mt: { title: '50 Mt fallout', kt: 50000 }
+  };
+  var FALLOUT_BANDS = [
+    { label: 'Lethal dose',     L0: 22,  W0: 9,  color: 0xFF1744 },
+    { label: 'Severe dose',     L0: 60,  W0: 22, color: 0xFFEA00 },
+    { label: 'Detectable dose', L0: 170, W0: 45, color: 0x69F0AE }
+  ];
+  function windDir()   { var v = parseFloat(document.getElementById('windDir').value);   return isFinite(v) ? v : 90; }
+  function windSpeed() { var v = parseFloat(document.getElementById('windSpeed').value); return (isFinite(v) && v > 0) ? v : 24; }
+
+  function falloutBands(kt, kmh) {
+    var lenScale = Math.sqrt(kt / 1000) * (kmh / 24);
+    var widScale = Math.sqrt(kt / 1000);
+    return FALLOUT_BANDS.map(function (b) {
+      return { label: b.label, color: b.color, km: b.L0 * lenScale, wideKm: b.W0 * widScale };
+    });
+  }
+
+  // Teardrop outline (world-space points) for one dose band: pinched at ground
+  // zero, widest about a third of the way downwind, tapering to a point at the end.
+  function falloutPlume(gz, brgDeg, lengthKm, widthKm) {
+    var STEPS = 40, right = [], left = [], i;
+    for (i = 0; i <= STEPS; i++) {
+      var t = i / STEPS;
+      var cp = destPoint(gz.lat, gz.lon, brgDeg, t * lengthKm);
+      var halfW = 0.5 * widthKm * Math.sin(Math.PI * Math.pow(t, 0.65));
+      right.push(destPoint(cp.lat, cp.lon, brgDeg + 90, halfW));
+      left.push(destPoint(cp.lat, cp.lon, brgDeg - 90, halfW));
+    }
+    var outline = [];
+    for (i = 0; i < right.length; i++) outline.push(latLonToWorld(right[i].lat, right[i].lon));
+    for (i = left.length - 1; i >= 0; i--) outline.push(latLonToWorld(left[i].lat, left[i].lon));
+    outline.push(outline[0].clone()); // close the loop
+    return outline;
+  }
+
   // Missile presets — representative maximum ranges (single ring each).
   var RING_PRESETS = {
     srbm: { title: 'SRBM range',  rings: [{ km: 1000,  color: 0xFF10D0, label: 'SRBM ~1,000 km' }] },
@@ -256,6 +322,12 @@
                     .sort(function (a, b) { return a.km - b.km; });
       return { title: y.title, rings: rings, nuke: true };
     }
+    if (FALLOUT_YIELDS[key]) {
+      var f = FALLOUT_YIELDS[key];
+      var dir = windDir(), spd = windSpeed();
+      return { title: f.title, fallout: true, kt: f.kt, windDir: dir, windSpeed: spd,
+               bands: falloutBands(f.kt, spd) };
+    }
     if (key === 'launch') return { title: 'Launch site', rings: [], launch: true };
     return { title: '', rings: [] };
   }
@@ -281,6 +353,24 @@
       var geom = new THREE.Geometry();
       geom.vertices = smallCircle(frame, theta, 96);
       var line = new THREE.Line(geom, new THREE.LineBasicMaterial({ color: rings[i].color, linewidth: 2 }));
+      scene.add(line);
+      ringLines.push(line);
+    }
+    render();
+  }
+
+  // Draw the fallout plume: one teardrop loop per dose band. Outer bands first so
+  // the smaller, higher-dose bands render on top.
+  function drawFalloutSet(set) {
+    clearRings();
+    if (!ringCenter) { render(); return; }
+    var gz = geoCoords(ringCenter);
+    for (var i = set.bands.length - 1; i >= 0; i--) {
+      var b = set.bands[i];
+      if (!(b.km > 0)) continue;
+      var geom = new THREE.Geometry();
+      geom.vertices = falloutPlume(gz, set.windDir, b.km, b.wideKm);
+      var line = new THREE.Line(geom, new THREE.LineBasicMaterial({ color: b.color, linewidth: 2 }));
       scene.add(line);
       ringLines.push(line);
     }
@@ -315,6 +405,16 @@
               '<b>' + Math.round(vAssist) + ' m/s</b> eastward (' +
               Math.round(100 * Math.cos(latRad)) + '% of the equatorial maximum).<br>' +
               'Launch <b>east</b>, from a low latitude on an eastern coast, for the biggest boost to orbit.</div>';
+    } else if (set.fallout) {
+      html += '<div class="ringWind">Wind ' + Math.round(set.windDir) + '° ' + compass(set.windDir) +
+              ' at ' + fmt(set.windSpeed) + ' km/h — the plume drifts downwind of ground zero.</div>';
+      for (var j = 0; j < set.bands.length; j++) {
+        var bd = set.bands[j];
+        html += '<div class="ringRow">' + swatch(bd.color) + bd.label + ' — ' +
+                fmt(bd.km) + ' km downwind, ' + fmt(bd.wideKm) + ' km wide</div>';
+      }
+      html += '<div class="ringNote">Illustrative downwind footprint, not a fallout simulation. ' +
+              'Set wind direction and speed above.</div>';
     } else {
       for (var i = 0; i < set.rings.length; i++) {
         var r = set.rings[i];
@@ -329,7 +429,8 @@
   function updateRings() {
     if (mode !== 'rings') return;
     var set = ringSetFor(selectedPreset());
-    drawRings(set.rings);
+    if (set.fallout) drawFalloutSet(set);
+    else drawRings(set.rings);
     renderRingReadout(set);
   }
 
@@ -466,23 +567,29 @@
       setText('distance', mode === 'path' ? 'Click points to trace a path' : 'Click at least 3 points to enclose an area');
     });
 
-    // Range Rings controls: preset dropdown, custom-radius field, clear button.
+    // Range Rings controls: preset dropdown, custom-radius field, wind controls, clear.
     var ringPreset = document.getElementById('ringPreset');
     var ringRadius = document.getElementById('ringRadius');
     var ringClear = document.getElementById('ringClear');
-    function updateRingCustomVisibility() {
-      toggle('ringCustomWrap', selectedPreset() === 'custom');
+    var windDirField = document.getElementById('windDir');
+    var windSpeedField = document.getElementById('windSpeed');
+    function updateRingControlsVisibility() {
+      var k = selectedPreset();
+      toggle('ringCustomWrap', k === 'custom');
+      toggle('windControls', k in FALLOUT_YIELDS);
     }
     if (ringPreset) ringPreset.addEventListener('change', function () {
-      updateRingCustomVisibility();
+      updateRingControlsVisibility();
       updateRings();
     });
     if (ringRadius) ringRadius.addEventListener('input', updateRings);
+    if (windDirField) windDirField.addEventListener('input', updateRings);
+    if (windSpeedField) windSpeedField.addEventListener('input', updateRings);
     if (ringClear) ringClear.addEventListener('click', function () {
       resetRings();
       updateRings();
     });
-    updateRingCustomVisibility();
+    updateRingControlsVisibility();
   }
 
   if (document.readyState === 'complete') initUI();

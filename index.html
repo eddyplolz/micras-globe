@@ -116,12 +116,22 @@
 								<option value="nuke1mt">1 Mt (thermonuclear)</option>
 								<option value="nuke50mt">50 Mt (Tsar-class)</option>
 							</optgroup>
+							<optgroup label="Nuclear fallout (downwind)">
+								<option value="fallout20">20 kt fallout</option>
+								<option value="fallout1mt">1 Mt fallout</option>
+								<option value="fallout50mt">50 Mt fallout</option>
+							</optgroup>
 							<optgroup label="Launch site">
 								<option value="launch">Rotational assist</option>
 							</optgroup>
 						</select>
 					</label><br>
-					<label id="ringCustomWrap">Radius <input type="text" id="ringRadius" value="1000"> km</label><br>
+					<label id="ringCustomWrap">Radius <input type="text" id="ringRadius" value="1000"> km</label>
+					<div id="windControls" style="display:none">
+						<label>Wind heading <input type="text" id="windDir" value="90"> ° (0=N, 90=E)</label><br>
+						<label>Wind speed <input type="text" id="windSpeed" value="24"> km/h</label>
+					</div>
+					<br>
 					<button type="button" id="ringClear">Clear rings</button>
 				</div>
 				<div id="ringInfo" style="display:none"></div>

@@ -184,6 +184,17 @@ h1 a {
 #ringRadius {
 	width: 60px;
 }
+#windControls {
+	margin: 5px 0 2px;
+	line-height: 1.8;
+}
+#windDir, #windSpeed {
+	width: 44px;
+}
+#ringInfo .ringWind {
+	margin-bottom: 4px;
+	color: rgba(255, 255, 255, 0.85);
+}
 #ringInfo {
 	margin-top: 8px;
 	padding-top: 6px;

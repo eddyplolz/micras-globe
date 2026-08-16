@@ -32,7 +32,7 @@ Explore Micras:
 - Reads out latitude, longitude, and the compass bearing for each point.
 - Estimates travel time across many modes, from a marching army to a low-orbit ground track (speeds are editable).
 - Traces multi-leg paths with a running total, and measures the area of a region you draw.
-- Draws **range rings** around any point — missile ranges, nuclear blast rings by yield, a custom radius, or a launch site's rotational assist to orbit.
+- Draws **range rings** around any point — missile ranges, nuclear blast rings by yield, a custom radius, a launch site's rotational assist to orbit, or a **downwind nuclear-fallout plume** with dose-rate bands (set wind direction and speed).
 - Adds a lat/long grid, flat-map projections (Mercator, Mollweide, more), atmosphere and lighting, and screenshot and GIF export.
 
 ## How to use it
