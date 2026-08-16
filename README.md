@@ -9,6 +9,24 @@ Spin the Micras map as a 3D globe, and measure the real distance between any two
 Micras is a shared, made-up world, and its map is flat. This tool wraps that flat map around a
 sphere so you can turn it, light it, and click two spots to see how far apart they actually are.
 
+## What is Micras?
+
+New here? **Micras** is a shared fictional world — an imaginary planet that a community of online
+worldbuilders has been developing together for over two decades. People found their own countries on
+it, draw their borders, write their histories, and work out together where everything belongs on the
+map. It grew out of *micronationalism* (the hobby of running small, mostly-online "nations"), and today
+it's a whole collaborative planet with its own geography, politics, and centuries of invented history.
+
+The world map on this globe is the community's canonical map, maintained by the **Micras Cartography
+Society (MCS)** — the group that tracks who claims what and keeps the map consistent.
+
+Want to explore Micras itself?
+
+- **[Micras](https://micras.org)** — the community's main site.
+- **[MicrasWiki](https://micras.org/mwiki/)** — the encyclopedia of Micras: its nations, history, geography, and lore.
+- **[Micras Cartography Society](https://micras.org/mwiki/Micras_Cartography_Society)** — the keepers of the map this tool uses.
+- **[Community forum](https://hub.mn/forum)** — where members talk, plan, and roleplay.
+
 ## What it does
 
 - Shows the current Micras map as a 3D globe. It loads on its own, no upload needed.

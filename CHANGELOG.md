@@ -4,6 +4,10 @@ All notable changes to Micras Globe. Newest first.
 
 ## 2026-08-16
 
+### Added
+- **"What is Micras?" section in the README**, introducing the shared world to newcomers, plus links
+  to Micras, MicrasWiki, the Micras Cartography Society, and the community forum.
+
 ### Changed
 - **Menus reorganized.** The single, over-long Options panel is split into focused tabs —
   **Measure**, **View**, **Environment**, and **Terrain** — so no panel runs off the bottom of the
