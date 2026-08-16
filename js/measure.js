@@ -7,22 +7,29 @@
    if this module is present, hands it to updateMeasureReadout(km) below.
 
    Increment 1 (this file): dual-unit readout (km / mi / nm) + travel-time
-   estimate. Later increments (lat/long, bearing, multi-segment paths, area)
-   build on the same hook.
+   estimate. Later increments add lat/long, bearing, multi-segment paths, area,
+   and a unified Range Rings mode (missile ranges, nuclear blast rings by yield,
+   custom radius, and launch-site rotational assist) — all on the same hook.
    ------------------------------------------------------------------------- */
 (function () {
   var KM_TO_MI = 0.621371;
   var KM_TO_NM = 0.539957; // nautical miles
 
   // Travel presets — sustained cross-country speed in km/day. Editable in the UI.
+  // Pre-modern rows are realistic daily progress (a day's march/ride/sail, with
+  // rest); modern powered rows assume near-continuous travel.
   var TRAVEL_PRESETS = [
-    { name: 'Marching army', kmday: 30 },
-    { name: 'On horseback',  kmday: 60 },
-    { name: 'Sailing ship',  kmday: 220 },   // ~5 knots, age of sail
-    { name: 'Steamship',     kmday: 500 },
-    { name: 'Railway',       kmday: 800 },
-    { name: 'Automobile',    kmday: 900 },
-    { name: 'Airliner',      kmday: 21600 }   // ~900 km/h
+    { name: 'Marching army',    kmday: 30 },
+    { name: 'On horseback',     kmday: 60 },
+    { name: 'Sailing ship',     kmday: 220 },     // ~5 knots, age of sail
+    { name: 'Steamship',        kmday: 500 },
+    { name: 'Railway',          kmday: 800 },
+    { name: 'Automobile',       kmday: 900 },
+    { name: 'Container ship',   kmday: 1050 },    // ~24 knots, continuous
+    { name: 'High-speed rail',  kmday: 1500 },    // a day's HSR journey, with stops
+    { name: 'Airliner',         kmday: 21600 },   // ~900 km/h, continuous
+    { name: 'Supersonic jet',   kmday: 52000 },   // ~2,150 km/h (Mach 2), continuous
+    { name: 'Orbital (LEO)',    kmday: 674000 }   // ~7.8 km/s low-orbit ground track
   ];
 
   var KM2_TO_MI2 = 0.386102; // square miles per square km
@@ -30,9 +37,15 @@
   var lastKm = null;
 
   // Path / Area mode state (Distance mode keeps the legacy 2-click behavior).
-  var mode = 'distance';        // 'distance' | 'path' | 'area'
+  var mode = 'distance';        // 'distance' | 'path' | 'area' | 'rings'
   var pathPoints = [];          // world-space {x,y,z} clicked in path/area mode
   var pathLine = null;          // THREE.Line rendering the polyline/loop
+
+  // Range Rings mode state.
+  var ringCenter = null;        // world-space {x,y,z} of the last-clicked center
+  var ringLines = [];           // THREE.Line objects for the drawn rings
+  var RING_EARTH_V_EQ = 465;    // m/s — Earth's equatorial rotation speed (assist ceiling)
+  var RING_PROMPT = 'Click a center point on the globe';
 
   function fmt(n, dp) {
     return (+n.toFixed(dp === undefined ? 0 : dp)).toLocaleString('en-US');
@@ -118,7 +131,7 @@
   // Great-circle length (km) between two world-space surface points, same math
   // as the legacy calcDistance(): arc = planetRadius * central angle from chord.
   function gcKm(p1, p2) {
-    var radius = parseFloat(document.getElementById('radius').value);
+    var radius = planetRadiusKm();
     var chord = Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2));
     var rA = Math.sqrt(p1.x * p1.x + p1.y * p1.y + p1.z * p1.z);
     var rB = Math.sqrt(p2.x * p2.x + p2.y * p2.y + p2.z * p2.z);
@@ -146,7 +159,7 @@
   // Spherical-polygon area (km^2) from the vertices' lat/long. Independent of the
   // longitude anchor (uses only longitude DIFFERENCES and latitude).
   function sphericalAreaKm2(pts) {
-    var radius = parseFloat(document.getElementById('radius').value);
+    var radius = planetRadiusKm();
     var d = Math.PI / 180;
     var c = [];
     for (var k = 0; k < pts.length; k++) c.push(geoCoords(pts[k]));
@@ -161,12 +174,182 @@
     return Math.abs(sum) * radius * radius / 2;
   }
 
+  // --- Range Rings ------------------------------------------------------------
+  // A circle of ground radius R centered on a point is the locus of surface
+  // points at central angle theta = R / planetRadius from the center. Build it
+  // from an orthonormal frame (C, U, V) with C = the center's unit vector:
+  //   point(phi) = cos(theta)*C + sin(theta)*(cos(phi)*U + sin(phi)*V)
+  // which is a unit vector for every phi; lift to 101 so it hugs the surface.
+  // The orthonormal frame depends only on the center, so it is built once per
+  // center (circleFrame) and shared by all concentric rings.
+  function circleFrame(centerVec) {
+    var C = centerVec.clone().normalize();
+    var up = Math.abs(C.y) > 0.99 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
+    var U = new THREE.Vector3().crossVectors(C, up).normalize();
+    var V = new THREE.Vector3().crossVectors(C, U).normalize();
+    return { C: C, U: U, V: V };
+  }
+
+  function smallCircle(frame, thetaRad, steps) {
+    var C = frame.C, U = frame.U, V = frame.V;
+    var cosT = Math.cos(thetaRad), sinT = Math.sin(thetaRad);
+    var pts = [];
+    for (var i = 0; i <= steps; i++) {
+      var phi = 2 * Math.PI * i / steps, w = Math.cos(phi), z = Math.sin(phi);
+      pts.push(new THREE.Vector3(
+        cosT * C.x + sinT * (w * U.x + z * V.x),
+        cosT * C.y + sinT * (w * U.y + z * V.y),
+        cosT * C.z + sinT * (w * U.z + z * V.z)
+      ).multiplyScalar(101));
+    }
+    return pts;
+  }
+
+  function planetRadiusKm() {
+    var r = parseFloat(document.getElementById('radius').value);
+    return (isFinite(r) && r > 0) ? r : 6371;
+  }
+
+  // Missile presets — representative maximum ranges (single ring each).
+  var RING_PRESETS = {
+    srbm: { title: 'SRBM range',  rings: [{ km: 1000,  color: 0x4FC3F7, label: 'SRBM ~1,000 km' }] },
+    mrbm: { title: 'MRBM range',  rings: [{ km: 3000,  color: 0x4FC3F7, label: 'MRBM ~3,000 km' }] },
+    irbm: { title: 'IRBM range',  rings: [{ km: 5500,  color: 0x4FC3F7, label: 'IRBM ~5,500 km' }] },
+    icbm: { title: 'ICBM range',  rings: [{ km: 12000, color: 0x4FC3F7, label: 'ICBM ~12,000 km' }] }
+  };
+
+  // Nuclear blast rings by yield (kt). Overpressure radii use cube-root scaling
+  // from ~1 kt airburst references; fireball and thermal use their own exponents.
+  // Approximate, for worldbuilding scale — clearly labeled in the readout.
+  function nukeRings(kt) {
+    var cbrt = Math.pow(kt, 1 / 3);
+    return [
+      { km: 0.056 * Math.pow(kt, 0.40), color: 0xFFF176, label: 'Fireball' },
+      { km: 0.14  * cbrt,               color: 0xFF7043, label: 'Severe blast ~20 psi' },
+      { km: 0.31  * cbrt,               color: 0xFFB300, label: 'Moderate blast ~5 psi' },
+      { km: 0.67  * Math.pow(kt, 0.41), color: 0xEF5350, label: 'Thermal, 3rd-degree burns' },
+      { km: 0.79  * cbrt,               color: 0xFFF59D, label: 'Light blast ~1 psi' }
+    ];
+  }
+  var NUKE_YIELDS = {
+    nuke20:   { title: '20 kt airburst (fission)',      kt: 20 },
+    nuke1mt:  { title: '1 Mt airburst (thermonuclear)', kt: 1000 },
+    nuke50mt: { title: '50 Mt airburst (Tsar-class)',   kt: 50000 }
+  };
+
+  function selectedPreset() {
+    var sel = document.getElementById('ringPreset');
+    return sel ? sel.value : 'custom';
+  }
+
+  // Resolve the current dropdown selection to a { title, rings[], nuke?, launch? }.
+  function ringSetFor(key) {
+    if (key === 'custom') {
+      var km = parseFloat(document.getElementById('ringRadius').value);
+      return { title: 'Custom radius',
+               rings: (isFinite(km) && km > 0) ? [{ km: km, color: 0xFFFF00, label: fmt(km) + ' km' }] : [] };
+    }
+    if (RING_PRESETS[key]) return RING_PRESETS[key];
+    if (NUKE_YIELDS[key]) {
+      var y = NUKE_YIELDS[key];
+      var rings = nukeRings(y.kt).filter(function (r) { return r.km > 0; })
+                    .sort(function (a, b) { return a.km - b.km; });
+      return { title: y.title, rings: rings, nuke: true };
+    }
+    if (key === 'launch') return { title: 'Launch site', rings: [], launch: true };
+    return { title: '', rings: [] };
+  }
+
+  function clearRings() {
+    for (var i = 0; i < ringLines.length; i++) {
+      scene.remove(ringLines[i]);
+      if (ringLines[i].geometry) ringLines[i].geometry.dispose();
+      if (ringLines[i].material) ringLines[i].material.dispose();
+    }
+    ringLines = [];
+  }
+
+  function drawRings(rings) {
+    clearRings();
+    if (!ringCenter) { render(); return; }
+    var frame = circleFrame(new THREE.Vector3(ringCenter.x, ringCenter.y, ringCenter.z));
+    var Rp = planetRadiusKm();
+    for (var i = 0; i < rings.length; i++) {
+      var theta = rings[i].km / Rp;         // central angle, radians
+      if (!(theta > 0)) continue;
+      if (theta > Math.PI) theta = Math.PI; // cap at the antipode
+      var geom = new THREE.Geometry();
+      geom.vertices = smallCircle(frame, theta, 96);
+      var line = new THREE.Line(geom, new THREE.LineBasicMaterial({ color: rings[i].color }));
+      scene.add(line);
+      ringLines.push(line);
+    }
+    render();
+  }
+
+  function fmtRingKm(km) {
+    if (km < 10) return km.toFixed(2) + ' km · ' + (km * KM_TO_MI).toFixed(2) + ' mi';
+    return fmt(km) + ' km · ' + fmt(km * KM_TO_MI) + ' mi';
+  }
+
+  function swatch(color) {
+    return '<span class="ringSwatch" style="background:#' +
+           ('000000' + color.toString(16)).slice(-6) + '"></span>';
+  }
+
+  function renderRingReadout(set) {
+    var info = document.getElementById('ringInfo');
+    if (!ringCenter) {
+      setText('distance', RING_PROMPT);
+      if (info) info.innerHTML = '';
+      return;
+    }
+    var c = geoCoords(ringCenter);
+    setText('distance', set.title + '  ·  center ' + formatCoord(c));
+    if (!info) return;
+    var latRad = Math.abs(c.lat) * Math.PI / 180;
+    var vAssist = RING_EARTH_V_EQ * Math.cos(latRad);
+    var html = '';
+    if (set.launch) {
+      html += '<div class="ringLaunch">Rotational assist at ' + Math.abs(c.lat).toFixed(1) + '°: ' +
+              '<b>' + Math.round(vAssist) + ' m/s</b> eastward (' +
+              Math.round(100 * Math.cos(latRad)) + '% of the equatorial maximum).<br>' +
+              'Launch <b>east</b>, from a low latitude on an eastern coast, for the biggest boost to orbit.</div>';
+    } else {
+      for (var i = 0; i < set.rings.length; i++) {
+        var r = set.rings[i];
+        html += '<div class="ringRow">' + swatch(r.color) + r.label + ' — ' + fmtRingKm(r.km) + '</div>';
+      }
+      if (set.nuke) html += '<div class="ringNote">Approximate airburst radii, cube-root scaled ' +
+                            '(after Glasstone &amp; Dolan). For scale, not targeting.</div>';
+    }
+    info.innerHTML = html;
+  }
+
+  function updateRings() {
+    if (mode !== 'rings') return;
+    var set = ringSetFor(selectedPreset());
+    drawRings(set.rings);
+    renderRingReadout(set);
+  }
+
+  function resetRings() {
+    clearRings();
+    ringCenter = null;
+    var info = document.getElementById('ringInfo');
+    if (info) info.innerHTML = '';
+  }
+
   // Click router — called first by the legacy placeDistancePoint(). Returns true
-  // to consume the click (path/area modes), false to fall through to legacy
+  // to consume the click (path/area/rings modes), false to fall through to legacy
   // 2-point Distance behavior.
   function measurePackClick(event) {
     if (mode === 'distance') return false;
     var p = coordinates(event);
+    if (mode === 'rings') {
+      if (p) { ringCenter = { x: p[0], y: p[1], z: p[2] }; updateRings(); }
+      return true;
+    }
     if (p) {
       pathPoints.push({ x: p[0], y: p[1], z: p[2] });
       redrawPath();
@@ -225,16 +408,22 @@
   function setMode(m) {
     mode = m;
     clearPath();
+    resetRings();
     if (typeof curvedLine !== 'undefined' && curvedLine) { scene.remove(curvedLine); render(); }
     if (typeof pointA !== 'undefined') pointA = [];
     if (typeof pointB !== 'undefined') pointB = [];
     toggle('coordBox', m === 'distance');
-    toggle('travelBox', m !== 'area');
-    toggle('pathControls', m !== 'distance');
+    toggle('travelBox', m === 'distance' || m === 'path');
+    toggle('pathControls', m === 'path' || m === 'area');
+    toggle('ringControls', m === 'rings');
+    toggle('ringInfo', m === 'rings');
     setText('coordA', '—'); setText('coordB', '—'); setText('bearing', '—');
     setText('travelTime', '—');
-    setText('distance', m === 'distance' ? 'Click two spots on the globe' :
-      m === 'path' ? 'Click points to trace a path' : 'Click at least 3 points to enclose an area');
+    setText('distance',
+      m === 'distance' ? 'Click two spots on the globe' :
+      m === 'path'     ? 'Click points to trace a path' :
+      m === 'area'     ? 'Click at least 3 points to enclose an area' :
+                         RING_PROMPT);
   }
 
   function toggle(id, show) {
@@ -276,6 +465,24 @@
       clearPath();
       setText('distance', mode === 'path' ? 'Click points to trace a path' : 'Click at least 3 points to enclose an area');
     });
+
+    // Range Rings controls: preset dropdown, custom-radius field, clear button.
+    var ringPreset = document.getElementById('ringPreset');
+    var ringRadius = document.getElementById('ringRadius');
+    var ringClear = document.getElementById('ringClear');
+    function updateRingCustomVisibility() {
+      toggle('ringCustomWrap', selectedPreset() === 'custom');
+    }
+    if (ringPreset) ringPreset.addEventListener('change', function () {
+      updateRingCustomVisibility();
+      updateRings();
+    });
+    if (ringRadius) ringRadius.addEventListener('input', updateRings);
+    if (ringClear) ringClear.addEventListener('click', function () {
+      resetRings();
+      updateRings();
+    });
+    updateRingCustomVisibility();
   }
 
   if (document.readyState === 'complete') initUI();

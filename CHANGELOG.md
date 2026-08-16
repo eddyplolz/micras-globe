@@ -5,6 +5,12 @@ All notable changes to Micras Globe. Newest first.
 ## 2026-08-16
 
 ### Added
+- **Range Rings.** A new measure mode: click a center point and draw a circle at a chosen radius.
+  Presets cover **missile ranges** (SRBM/MRBM/IRBM/ICBM), **nuclear blast rings by yield** (fireball,
+  overpressure, and thermal radii — approximate, for scale), a **custom radius**, and a **launch site**
+  readout (a point's eastward rotational assist to orbit, largest near the equator).
+- **More travel modes.** The travel-time estimator gains a container ship, high-speed rail, a
+  supersonic jet, and a low-orbit ground track alongside the existing land, sea, and air modes.
 - **"What is Micras?" section in the README**, introducing the shared world to newcomers, plus links
   to Micras, MicrasWiki, the Micras Cartography Society, and the community forum.
 

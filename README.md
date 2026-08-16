@@ -30,8 +30,9 @@ Explore Micras:
 - Shows the current Micras map on a globe, loaded automatically. No upload needed.
 - Measures true great-circle distance in kilometers, miles, and nautical miles.
 - Reads out latitude, longitude, and the compass bearing for each point.
-- Estimates travel time, from a marching army to an airliner (speeds are editable).
+- Estimates travel time across many modes, from a marching army to a low-orbit ground track (speeds are editable).
 - Traces multi-leg paths with a running total, and measures the area of a region you draw.
+- Draws **range rings** around any point — missile ranges, nuclear blast rings by yield, a custom radius, or a launch site's rotational assist to orbit.
 - Adds a lat/long grid, flat-map projections (Mercator, Mollweide, more), atmosphere and lighting, and screenshot and GIF export.
 
 ## How to use it
@@ -39,7 +40,8 @@ Explore Micras:
 - Rotate: left-click and drag.
 - Zoom: mouse wheel.
 - Pan: right-click and drag.
-- Measure: open the **Measure** tab, click **Measure distance**, then pick **Distance**, **Path**, or **Area**.
+- Measure: open the **Measure** tab, click **Measure distance**, then pick **Distance**, **Path**, **Area**, or **Rings**.
+- Rings: in **Rings** mode, click a center point, then choose a preset (missile range, nuclear yield, custom radius, or launch site).
 - Different map: open **Images** and upload any 2:1 (equirectangular) picture.
 
 The controls sit in tabs: Measure, View, Environment, Terrain, plus Images, Generate, Screenshots,

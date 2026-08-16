@@ -173,6 +173,45 @@ h1 a {
 #travelTime {
 	font-weight: bold;
 }
+#ringControls {
+	margin: 6px 0;
+	font-size: 13px;
+	line-height: 1.9;
+}
+#ringControls select {
+	max-width: 170px;
+}
+#ringRadius {
+	width: 60px;
+}
+#ringInfo {
+	margin-top: 8px;
+	padding-top: 6px;
+	border-top: 1px solid rgba(255, 255, 255, 0.15);
+	font-size: 12.5px;
+	line-height: 1.6;
+	color: rgba(255, 255, 255, 0.9);
+}
+#ringInfo .ringRow {
+	white-space: nowrap;
+}
+#ringInfo .ringSwatch {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 2px;
+	margin-right: 6px;
+	vertical-align: middle;
+}
+#ringInfo .ringNote,
+#ringInfo .ringLaunch {
+	margin-top: 6px;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.7);
+}
+#ringInfo .ringLaunch {
+	color: rgba(255, 255, 255, 0.9);
+}
 #gridSettings input {
 	width: 30px;
 }
@@ -238,11 +277,15 @@ h2 {
 #contextMenu button:hover {
 	background: #3d8ce8;
 }
-#pathControls button {
+#pathControls button,
+#ringControls button {
 	padding: 4px 10px;
 	background: #4a4d52;
+	font-size: 12px;
+	cursor: pointer;
 }
-#pathControls button:hover { background: #5a5e64; }
+#pathControls button:hover,
+#ringControls button:hover { background: #5a5e64; }
 p, #imgurURL, label, span {
 	font-size: 12px;
 }

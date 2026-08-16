@@ -94,12 +94,37 @@
 					<label><input type="radio" name="measureMode" value="distance" checked> Distance</label>
 					<label><input type="radio" name="measureMode" value="path"> Path</label>
 					<label><input type="radio" name="measureMode" value="area"> Area</label>
+					<label><input type="radio" name="measureMode" value="rings"> Rings</label>
 				</div>
 				<span id="distance">Click two spots on the globe</span>
 				<div id="pathControls" style="display:none">
 					<button type="button" id="measureUndo">Undo point</button>
 					<button type="button" id="measureClear">Clear</button>
 				</div>
+				<div id="ringControls" style="display:none">
+					<label>Preset
+						<select id="ringPreset">
+							<option value="custom">Custom radius</option>
+							<optgroup label="Missile range">
+								<option value="srbm">SRBM (~1,000 km)</option>
+								<option value="mrbm">MRBM (~3,000 km)</option>
+								<option value="irbm">IRBM (~5,500 km)</option>
+								<option value="icbm">ICBM (~12,000 km)</option>
+							</optgroup>
+							<optgroup label="Nuclear blast (airburst)">
+								<option value="nuke20">20 kt (fission)</option>
+								<option value="nuke1mt">1 Mt (thermonuclear)</option>
+								<option value="nuke50mt">50 Mt (Tsar-class)</option>
+							</optgroup>
+							<optgroup label="Launch site">
+								<option value="launch">Rotational assist</option>
+							</optgroup>
+						</select>
+					</label><br>
+					<label id="ringCustomWrap">Radius <input type="text" id="ringRadius" value="1000"> km</label><br>
+					<button type="button" id="ringClear">Clear rings</button>
+				</div>
+				<div id="ringInfo" style="display:none"></div>
 				<div id="coordBox">
 					<div>From: <span id="coordA">&mdash;</span></div>
 					<div>To: <span id="coordB">&mdash;</span></div>
