@@ -1,103 +1,93 @@
 # 🌍 Micras Globe
 
-Spin the Micras map as a 3D globe, and measure the real distance between any two places on it.
+Spin the Micras map as a 3D globe and measure the real distance between any two places on it.
 
 **Live: https://eddyplolz.github.io/micras-globe/**
 
 ![The Micras map wrapped on a 3D globe with the lat/long grid enabled](img/preview.jpg)
 
-Micras is a shared, made-up world, and its map is flat. This tool wraps that flat map around a
-sphere so you can turn it, light it, and click two spots to see how far apart they actually are.
+The Micras map is flat. This wraps it around a sphere you can turn, light, and click to measure.
 
 ## What is Micras?
 
-New here? **Micras** is a shared fictional world — an imaginary planet that a community of online
-worldbuilders has been developing together for over two decades. People found their own countries on
-it, draw their borders, write their histories, and work out together where everything belongs on the
-map. It grew out of *micronationalism* (the hobby of running small, mostly-online "nations"), and today
-it's a whole collaborative planet with its own geography, politics, and centuries of invented history.
+New here? Micras is a made-up world that a community of online worldbuilders has built together over
+the past couple of decades. People start their own countries on it, draw the borders, and write the
+history, agreeing among themselves where everything sits on the map.
 
-The world map on this globe is the community's canonical map, maintained by the **Micras Cartography
-Society (MCS)** — the group that tracks who claims what and keeps the map consistent.
+It began as a micronationalism hobby (running small, mostly-online "nations" for fun) and grew into a
+full shared planet with its own geography and politics. The map here is the community's official one,
+looked after by the Micras Cartography Society (MCS).
 
-Want to explore Micras itself?
+Explore Micras:
 
-- **[Micras](https://micras.org)** — the community's main site.
-- **[MicrasWiki](https://micras.org/mwiki/)** — the encyclopedia of Micras: its nations, history, geography, and lore.
-- **[Micras Cartography Society](https://micras.org/mwiki/Micras_Cartography_Society)** — the keepers of the map this tool uses.
-- **[Community forum](https://hub.mn/forum)** — where members talk, plan, and roleplay.
+- [Micras](https://micras.org): the community's main site.
+- [MicrasWiki](https://micras.org/mwiki/): the encyclopedia. Nations, history, geography, lore.
+- [Micras Cartography Society](https://micras.org/mwiki/Micras_Cartography_Society): the people who make and keep the map.
+- [Community forum](https://hub.mn/forum): where members talk, plan, and roleplay.
 
 ## What it does
 
-- Shows the current Micras map as a 3D globe. It loads on its own, no upload needed.
-- Measures distance the honest way — true great-circle, in kilometers, miles, and nautical miles.
-- Reads out the latitude and longitude of each point and the compass bearing between them.
-- Estimates travel time, from a marching army to an airliner (the speeds are editable).
-- Traces multi-leg **paths** (rivers, roads, borders) with a running total, and measures the **area** of a region you draw.
-- Draws a latitude/longitude grid you can adjust.
-- Re-projects the map into other styles (Mercator, Mollweide, and more) if you want a flat view.
-- Has atmosphere, lighting, and tilt controls, plus screenshot and spinning-GIF export.
+- Shows the current Micras map on a globe, loaded automatically. No upload needed.
+- Measures true great-circle distance in kilometers, miles, and nautical miles.
+- Reads out latitude, longitude, and the compass bearing for each point.
+- Estimates travel time, from a marching army to an airliner (speeds are editable).
+- Traces multi-leg paths with a running total, and measures the area of a region you draw.
+- Adds a lat/long grid, flat-map projections (Mercator, Mollweide, more), atmosphere and lighting, and screenshot and GIF export.
 
 ## How to use it
 
 - Rotate: left-click and drag.
 - Zoom: mouse wheel.
 - Pan: right-click and drag.
-- Measure: open the **Measure** tab, click **Measure distance**, then pick a mode — **Distance** (two
-  points), **Path** (click many points for a running total), or **Area** (enclose a region for its size).
-- Menus: the controls are grouped into tabs — **Measure**, **View** (background, pole, grid),
-  **Environment** (atmosphere, sun, light, tilt), and **Terrain** — plus Images, Generate, Screenshots,
-  Animations, and Map Projections.
-- Use a different map: open **Images** and upload any 2:1 (equirectangular) picture.
+- Measure: open the **Measure** tab, click **Measure distance**, then pick **Distance**, **Path**, or **Area**.
+- Different map: open **Images** and upload any 2:1 (equirectangular) picture.
 
-A note on the numbers: distances come out in kilometers, with miles and nautical miles alongside,
-because Micras is about the size of Earth (radius around 6,371 km). They are true great-circle
-distances — accurate at every range, including halfway around the world. Latitude is measured from
-the pole; longitude is measured east or west of the map's center (a convention of this tool, since
-Micras has no official prime meridian).
+The controls sit in tabs: Measure, View, Environment, Terrain, plus Images, Generate, Screenshots,
+Animations, and Map Projections.
 
-A note on the map: the default is a current no-border Micras map. The maps are made by the Micras
-Cartography Society, and the newest ones live at [micras.org](https://micras.org/).
+About the numbers: distances are true great-circle and accurate at every range, because Micras is
+about Earth-sized (radius around 6,371 km). Latitude runs from the pole. Longitude is measured east or
+west of the map's center, a convention of this tool since Micras has no official prime meridian.
 
 ## Run it yourself
 
-It is just static files. No server, no build step.
+Just static files. No server, no build step.
 
 ```bash
 npx serve .
 ```
 
-Open the link it prints. To put your own copy online, drop these files on any static host (GitHub
-Pages, Netlify, whatever you like). Nothing else is needed.
+Open the link it prints. To host your own copy, drop these files on any static host (GitHub Pages,
+Netlify, whatever you like).
 
 ## Credits
 
-The globe itself, the measuring tool, the projections, the exports, and the shaders are all the work
-of **MapToGlobe**. This project just wraps it for Micras.
+The globe, the measuring, the projections, the exports, and the shaders are all the work of
+MapToGlobe. This project just wraps it for Micras.
 
-- **MapToGlobe** by Kurt Peters (who made the original) and Tom Bowyer ([@Zeerg](https://github.com/Zeerg),
-  who maintains it today). It is released under the [Mozilla Public License 2.0](https://choosealicense.com/licenses/mpl-2.0/).
-  Current source: [github.com/Zeerg/MapToGlobe](https://github.com/Zeerg/MapToGlobe). Try the original at
+- MapToGlobe by Kurt Peters (the original) and Tom Bowyer ([@Zeerg](https://github.com/Zeerg), current
+  maintainer). Released under the [Mozilla Public License 2.0](https://choosealicense.com/licenses/mpl-2.0/).
+  Source: [github.com/Zeerg/MapToGlobe](https://github.com/Zeerg/MapToGlobe). Try the original at
   [maptoglobe.com](https://www.maptoglobe.com/).
 - The glow and atmosphere shader is adapted from Lee Stemkoski's Three.js "Shader Glow Effect" example.
-- The Micras map is made by the [Micras Cartography Society](https://micras.org/mwiki/Micras_Cartography_Society)
+- The Micras map is by the [Micras Cartography Society](https://micras.org/mwiki/Micras_Cartography_Society)
   and its mapmakers.
 
 Built and hosted by Eddy ([@eddyplolz](https://github.com/eddyplolz)), with
-[Claude](https://www.anthropic.com/claude) (Anthropic's Claude Code) helping put it together: pulling
-the original source, adapting it for Micras, and setting up the static build and deployment.
+[Claude](https://www.anthropic.com/claude) (Anthropic's Claude Code) helping pull the source, adapt it
+for Micras, and set up the static build and deployment.
 
-The libraries it uses, each under its own open license: Three.js, jQuery, D3 (with d3-geo-projection),
-gif.js, JSZip, Remodal, colpick, seedrandom, simplex-noise, async.js, and the Three.js OrbitControls,
+Libraries used, each under its own open license: Three.js, jQuery, D3 with d3-geo-projection, gif.js,
+JSZip, Remodal, colpick, seedrandom, simplex-noise, async.js, and the Three.js OrbitControls,
 ShaderTerrain, and Detector helpers.
 
-## What is different here
+## What's different here
 
-Compared to the original MapToGlobe, this version:
+Compared to the original MapToGlobe:
 
-1. Opens straight onto the Micras map and measures at Micras scale.
+1. Opens straight onto the Micras map, at Micras scale.
 2. Drops everything that needed a server: the old save and share links, the imgur upload, and the
-   analytics. So it runs as plain files with no backend and no tracking.
+   analytics. It runs as plain files, no backend, no tracking.
 3. Fixes the file paths for static hosting and renames itself "Micras Globe."
 
 Everything specific to Micras lives in one small file, `js/micras-defaults.js`. The rest of MapToGlobe
@@ -107,5 +97,5 @@ is left as it was.
 
 MapToGlobe is under the MPL-2.0 (see Credits), and this build follows the same terms. It is here for
 the Micras community to use. If you are Kurt Peters or Tom Bowyer and want the credit changed, or this
-copy taken down, just [open an issue](https://github.com/eddyplolz/micras-globe/issues) and it will be
+copy taken down, [open an issue](https://github.com/eddyplolz/micras-globe/issues) and it will be
 sorted out quickly.
