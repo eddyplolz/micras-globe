@@ -20,6 +20,9 @@ All notable changes to Micras Globe. Newest first.
   to Micras, MicrasWiki, the Micras Cartography Society, and the community forum.
 
 ### Fixed
+- **Help and Explore menu links now work.** They used to point at dead `/help` and `/explore` pages
+  (404 on the static site). **Help** now opens the "How to use it" guide in the README, and **Explore**
+  opens MicrasWiki.
 - **Corrected the planet radius to canon.** The globe now uses Micras's canonical radius of
   **6,875 km** (per the MicrasWiki "Micras" infobox) instead of Earth's 6,371 km. Every distance,
   area, and travel-time reading was about 8% too small; they are now to scale.
