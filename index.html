@@ -107,7 +107,21 @@
 				<input type="button" id="measure" value="Measure distance" onclick="measureToggle()" />
 				<div id="measureBox">
 					<label>Planet radius: <input type="text" id="radius" value="100"> km</label><br>
+					<div id="measureModes">
+						<label><input type="radio" name="measureMode" value="distance" checked> Distance</label>
+						<label><input type="radio" name="measureMode" value="path"> Path</label>
+						<label><input type="radio" name="measureMode" value="area"> Area</label>
+					</div>
 					<span id="distance">Click two spots on the globe</span>
+					<div id="pathControls" style="display:none">
+						<button type="button" id="measureUndo">Undo point</button>
+						<button type="button" id="measureClear">Clear</button>
+					</div>
+					<div id="coordBox">
+						<div>From: <span id="coordA">&mdash;</span></div>
+						<div>To: <span id="coordB">&mdash;</span></div>
+						<div>Bearing: <span id="bearing">&mdash;</span></div>
+					</div>
 					<div id="travelBox">
 						<label>Travel time by <select id="travelMode"></select></label><br>
 						<label>at <input type="text" id="travelSpeed" value="30"> km/day &rarr; <span id="travelTime">&mdash;</span></label>

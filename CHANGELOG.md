@@ -1,0 +1,33 @@
+# Changelog
+
+All notable changes to Micras Globe. Newest first.
+
+## 2026-08-15
+
+### Added
+- **Measurement Pack.** The measure tool now does far more than one distance:
+  - Distance shown in **kilometers, miles, and nautical miles** together.
+  - **Latitude/longitude** of each clicked point and the **compass bearing** between them
+    (latitude from the pole; longitude east/west of the map center — a tool convention).
+  - **Travel-time** estimate with editable speed presets, from a marching army to an airliner.
+  - **Path** mode — click many points for a running great-circle total (routes, borders, rivers).
+  - **Area** mode — enclose a region to read its spherical-polygon area in km² and mi², plus perimeter.
+- **Navigation links** — the "Micras Globe" title links to the source repo; a footer links out to
+  MicrasWiki and the Micras Tools hub.
+- **README preview image** — a framed screenshot of the globe.
+
+### Changed
+- Default surface swapped to the latest no-border Micras map.
+- Self-hosted the Open Sans font; the page now makes no external requests.
+- Removed the unused 2D Sketch-View drawing mode (the lat/long grid overlay it shared code with is kept).
+
+### Fixed
+- Distance measurement now uses a true great-circle arc, accurate at every range. It previously
+  approximated the arc by the straight-line chord and read low toward the far side of the world.
+
+## Initial release — 2026-08-15
+
+- Self-hosted mirror of the legacy MapToGlobe (vanilla JS, jQuery, Three.js, D3), with the current
+  Micras map on a 3D globe, distance measuring, a lat/long grid, map re-projections, atmosphere and
+  lighting controls, and screenshot / spinning-GIF export. Trackers and server-side save/share/upload
+  from the original were stripped for a fully client-side, static build.

@@ -126,6 +126,31 @@ h1 a {
 	display: inline-block;
 	margin: 4px 0 2px;
 }
+#measureModes {
+	margin: 6px 0;
+	font-size: 13px;
+}
+#measureModes label {
+	margin-right: 8px;
+	white-space: nowrap;
+}
+#pathControls {
+	margin: 6px 0;
+}
+#pathControls button {
+	font-size: 12px;
+	margin-right: 6px;
+	cursor: pointer;
+}
+#coordBox {
+	margin-top: 6px;
+	font-size: 13px;
+	line-height: 1.5;
+	color: rgba(255, 255, 255, 0.9);
+}
+#coordBox span {
+	font-weight: bold;
+}
 #travelBox {
 	margin-top: 8px;
 	padding-top: 6px;

@@ -12,7 +12,10 @@ sphere so you can turn it, light it, and click two spots to see how far apart th
 ## What it does
 
 - Shows the current Micras map as a 3D globe. It loads on its own, no upload needed.
-- Measures distance. Click two points, get the answer in kilometers.
+- Measures distance the honest way — true great-circle, in kilometers, miles, and nautical miles.
+- Reads out the latitude and longitude of each point and the compass bearing between them.
+- Estimates travel time, from a marching army to an airliner (the speeds are editable).
+- Traces multi-leg **paths** (rivers, roads, borders) with a running total, and measures the **area** of a region you draw.
 - Draws a latitude/longitude grid you can adjust.
 - Re-projects the map into other styles (Mercator, Mollweide, and more) if you want a flat view.
 - Has atmosphere, lighting, and tilt controls, plus screenshot and spinning-GIF export.
@@ -22,13 +25,15 @@ sphere so you can turn it, light it, and click two spots to see how far apart th
 - Rotate: left-click and drag.
 - Zoom: mouse wheel.
 - Pan: right-click and drag.
-- Measure: open **Options**, click **Measure distance**, then click two spots on the globe.
+- Measure: open **Options**, click **Measure distance**, then pick a mode — **Distance** (two points),
+  **Path** (click many points for a running total), or **Area** (enclose a region to get its size).
 - Use a different map: open **Images** and upload any 2:1 (equirectangular) picture.
 
-A note on the numbers: distances come out in kilometers, because Micras is about the size of Earth
-(radius around 6,371 km). Short and medium distances are accurate. Very long ones, close to halfway
-around the world, read a little low for now. That is a rough edge in the old distance math that a
-later update can smooth out.
+A note on the numbers: distances come out in kilometers, with miles and nautical miles alongside,
+because Micras is about the size of Earth (radius around 6,371 km). They are true great-circle
+distances — accurate at every range, including halfway around the world. Latitude is measured from
+the pole; longitude is measured east or west of the map's center (a convention of this tool, since
+Micras has no official prime meridian).
 
 A note on the map: the default is a current no-border Micras map. The maps are made by the Micras
 Cartography Society, and the newest ones live at [micras.org](https://micras.org/).

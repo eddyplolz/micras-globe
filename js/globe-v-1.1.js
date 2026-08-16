@@ -567,6 +567,9 @@ function coordinates(event) {
 }
 
 function placeDistancePoint(event) {
+	// Measurement Pack (js/measure.js) handles Path/Area modes; it returns true to
+	// consume the click, false to fall through to legacy 2-point Distance behavior.
+	if (typeof measurePackClick === 'function' && measurePackClick(event)) return;
 	var point = coordinates(event);
 	if (point != undefined) {
 		if (!('x' in pointA) || ('x' in pointB)) {
