@@ -103,6 +103,11 @@ h1 a {
 	color: #53A3FE;
 	box-shadow: inset 0 -4px 0px -2px #53a3fe
 }
+#globalMenu > li[role="button"]:focus-visible,
+#globalMenu a:focus-visible {
+	outline: 2px solid #8cc8ff;
+	outline-offset: -3px;
+}
 #contextMenu {
 	display: none;
 	position: absolute;
@@ -172,6 +177,30 @@ h1 a {
 }
 #coordBox span {
 	font-weight: bold;
+}
+#modelNotes {
+	margin-top: 8px;
+	padding-top: 6px;
+	border-top: 1px solid rgba(255, 255, 255, 0.15);
+	font-size: 12px;
+	line-height: 1.5;
+	color: rgba(255, 255, 255, 0.75);
+}
+#modelNotes > summary {
+	cursor: pointer;
+	color: rgba(255, 255, 255, 0.9);
+}
+#modelNotes p {
+	margin: 6px 0 0;
+}
+#modelNotes a {
+	color: #53A3FE;
+}
+.controlNote {
+	margin: 3px 0 0;
+	font-size: 11.5px;
+	line-height: 1.4;
+	color: rgba(255, 255, 255, 0.6);
 }
 #travelBox {
 	margin-top: 8px;
@@ -285,6 +314,18 @@ h2 {
 	vertical-align: middle;
 }
 #contextMenu .sunPosition { width: 200px; }
+#shareViewStatus {
+	display: block;
+	min-height: 18px;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.75);
+}
+#shareViewStatus.viewStatusError { color: #ff9f9f; }
+.controlNote {
+	margin: 0 0 8px 24px;
+	line-height: 1.4;
+	color: rgba(255, 255, 255, 0.65);
+}
 #contextMenu input[type="button"],
 #contextMenu button {
 	background: #53A3FE;
@@ -1019,15 +1060,48 @@ canvas {
 }
 
 @media (max-width: 640px) {
-	nav {
-		float: left;
+	/* The menu bar used to hide every tool below 640px, leaving phone users with
+	   nothing but Help and Explore. Scroll it horizontally instead. */
+	#globalContext {
+		box-sizing: border-box;
+		overflow-x: auto;
+		overflow-y: hidden;
+		padding-left: 0;
+		-webkit-overflow-scrolling: touch;
 	}
 
-	#globalMenu > li {
-		display: none;
+	#globalMenu {
+		display: inline-flex;
 	}
 
-	#globalMenu > #helpabout, #globalMenu > #explore {
-		display: inline-block;
+	#globalMenu > li,
+	#globalMenu > li#projections,
+	#globalMenu > li#drawToggle {
+		display: block;
+		float: none;
+		flex: 0 0 auto;
+		padding: 0 12px;
+	}
+
+	#contextMenu {
+		box-sizing: border-box;
+		left: 0;
+		width: min(320px, 100%);
+		max-height: calc(100vh - 44px);
+	}
+
+	#disclaimer {
+		top: 43px;
+		bottom: auto;
+		max-width: calc(100% - 20px);
+		width: calc(100% - 20px);
+	}
+
+	h1 {
+		font-size: 16px;
+	}
+
+	#siteLinks {
+		font-size: 11px;
 	}
 }

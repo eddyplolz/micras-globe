@@ -14,8 +14,17 @@
      2. Loads the current Micras world map as the default surface texture via the
         app's own fileSelect(), so the globe opens showing Micras with no upload.
    ------------------------------------------------------------------------- */
+// Canonical Micras figures, published once so every layer reads the same numbers.
+// Both have already drifted in shipped code — the radius once sat at Earth's 6,371 km
+// and the rotational assist at Earth's 465 m/s — so derive from here, never re-type.
+// Source: MicrasWiki "Micras" infobox — https://micras.org/mwiki/Micras
+window.MicrasCanon = Object.freeze({
+  radiusKm: 6875,
+  solarDayHours: 24
+});
+
 (function () {
-  var MICRAS_RADIUS = 6875;           // km; canonical Micras radius (MicrasWiki "Micras" infobox)
+  var MICRAS_RADIUS = window.MicrasCanon.radiusKm;   // km
   var MICRAS_MAP = 'img/micras-map.png';
 
   function applyMicrasDefaults() {

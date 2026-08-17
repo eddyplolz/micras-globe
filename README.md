@@ -33,6 +33,8 @@ Explore Micras:
 - Estimates travel time across many modes, from a marching army to a low-orbit ground track (speeds are editable).
 - Traces multi-leg paths with a running total, and measures the area of a region you draw.
 - Draws **range rings** around any point — missile ranges, nuclear blast rings by yield, a custom radius, a launch site's rotational assist to orbit, or a **downwind nuclear-fallout plume** with dose-rate bands (set wind direction and speed).
+- Draws a day/night boundary that follows the globe's manual sun-position controls without pretending to show a canonical current time.
+- Copies a shareable link that restores the same camera angle, zoom, and panned center.
 - Adds a lat/long grid, flat-map projections (Mercator, Mollweide, more), atmosphere and lighting, and screenshot and GIF export.
 
 ## How to use it
@@ -42,10 +44,19 @@ Explore Micras:
 - Pan: right-click and drag.
 - Measure: open the **Measure** tab, click **Measure distance**, then pick **Distance**, **Path**, **Area**, or **Rings**.
 - Rings: in **Rings** mode, click a center point, then choose a preset (missile range, nuclear yield, custom radius, or launch site).
+- Day/night boundary: open **Environment**, enable **Show day/night boundary**, then move the Sun Position sliders.
+- Share a view: frame the globe, open **View**, and select **Copy current view link**.
 - Different map: open **Images** and upload any 2:1 (equirectangular) picture.
+- Keyboard: Tab moves between menu items, Enter or Space opens one.
 
 The controls sit in tabs: Measure, View, Environment, Terrain, plus Images, Generate, Screenshots,
-Animations, and Map Projections.
+Animations, and Map Projections. On a phone the tab bar scrolls sideways — swipe it to reach the
+tabs that do not fit.
+
+What the presets assume is spelled out in **Model assumptions and sources**, a collapsible note at
+the bottom of the Measure panel. In short: missile rings are representative range classes rather
+than a specific weapon, blast rings use approximate cube-root scaling, and the fallout footprint is
+illustrative rather than predictive.
 
 About the numbers: distances are true great-circle and accurate at every range, using Micras's
 canonical planetary radius of 6,875 km (per the MicrasWiki "Micras" infobox). Latitude runs from the pole. Longitude is measured east or

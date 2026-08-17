@@ -5,6 +5,8 @@ All notable changes to Micras Globe. Newest first.
 ## 2026-08-16
 
 ### Added
+- **Day/night boundary.** An optional line follows the existing manual Sun Position controls and marks the exact light/dark boundary on the globe. It does not claim to show a canonical current time or season.
+- **Shareable views.** The View panel can copy a link that restores the same camera angle, zoom, and panned center.
 - **Footer disclaimer.** A short note in the bottom bar explains that distances are approximate (based
   on Micras's canonical 6,875 km radius) and that travel-time estimates are a work in progress.
 - **Nuclear fallout plume.** A new Range Rings preset draws the downwind contamination footprint from
@@ -19,7 +21,25 @@ All notable changes to Micras Globe. Newest first.
 - **"What is Micras?" section in the README**, introducing the shared world to newcomers, plus links
   to Micras, MicrasWiki, the Micras Cartography Society, and the community forum.
 
+- **Model assumptions and sources.** The Measure panel now carries a collapsible note stating what
+  each preset actually models — representative missile range classes, approximate cube-root blast
+  scaling, an illustrative (not predictive) fallout footprint, and editable travel assumptions.
+
 ### Fixed
+- **The menu bar works on phones.** Below 640 px every tool — Images, Generate, Measure, View,
+  Environment, Terrain, Screenshots, Animations — was hidden, leaving only Help and Explore. The bar
+  is now a horizontally scrollable strip with all items reachable.
+- **Launch assist now uses Micras's rotation, not Earth's.** The rotational-assist readout was
+  quoting Earth's equatorial speed of 465 m/s. Micras is larger, so its equator moves at about
+  **500 m/s** (6,875 km radius, 24-hour solar day). The value is now derived from those canonical
+  figures rather than hardcoded, so it cannot drift from the radius again.
+- **Menus are keyboard-accessible.** The menu items are list elements and had no keyboard
+  activation; Enter and Space now open them, and focused items show a visible outline.
+- **Startup is no longer order-dependent.** Ten scripts loaded with `async`, letting them race each
+  other despite real dependencies (OrbitControls before the globe wires controls, the polyhedron
+  projections after d3). They now load with `defer`, which preserves order.
+- **A resize before the scene is ready no longer throws.** `windowResize` now returns early if the
+  camera or renderer does not exist yet.
 - **Help and Explore menu links now work.** They used to point at dead `/help` and `/explore` pages
   (404 on the static site). **Help** now opens the "How to use it" guide in the README, and **Explore**
   opens MicrasWiki.

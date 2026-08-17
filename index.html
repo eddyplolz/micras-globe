@@ -16,21 +16,25 @@
 	<script src="js/colpick.js" type="text/javascript"></script>
 	<script src="js/globe-v-1.1.js"></script>
 	<script src="js/legacy.js"></script>
-	<script src="js/OrbitControls-v-1.js" async></script>
-	<script src="js/draw.js" async></script>
-	<script src="js/gif.js" async></script>
-	<script src="js/gif.worker.js" async></script>
-	<script src="js/jszip.min.js" async></script>
-	<script src="js/Simplex.min.js" async></script>
-	<script src="js/d3.geo.projection.min.js" charset="utf-8" async></script>
-	<script src="js/polyhedron.js" charset="utf-8" async></script>
-	<script src="js/seedrandom.min.js" async></script>
-	<script src="js/async.min.js" async></script>
+	<!-- defer, not async: these depend on each other and on load order (OrbitControls
+	     before the globe wires controls, polyhedron after d3.geo.projection). async
+	     let them race and intermittently broke startup. -->
+	<script src="js/OrbitControls-v-1.js" defer></script>
+	<script src="js/draw.js" defer></script>
+	<script src="js/gif.js" defer></script>
+	<script src="js/gif.worker.js" defer></script>
+	<script src="js/jszip.min.js" defer></script>
+	<script src="js/Simplex.min.js" defer></script>
+	<script src="js/d3.geo.projection.min.js" charset="utf-8" defer></script>
+	<script src="js/polyhedron.js" charset="utf-8" defer></script>
+	<script src="js/seedrandom.min.js" defer></script>
+	<script src="js/async.min.js" defer></script>
 	<script src="js/d3.min.js" charset="utf-8"></script>
 	<script src="js/remodal.min.js" defer></script>
 	<script src="js/ui.js" defer></script>
 	<script src="js/micras-defaults.js" defer></script>
 	<script src="js/measure.js" defer></script>
+	<script src="js/view-tools.js" defer></script>
 	<!-- Google Analytics (UA-1986390-4) removed for the self-hosted Micras build.
 	     ga() is stubbed to a no-op so the app's analyticsEvent() calls stay harmless. -->
 	<script>
@@ -71,16 +75,16 @@
 	<div id="disclaimer">Distances are approximate, based on Micras's canonical radius (6,875&nbsp;km). Travel-time estimates are a work in progress.</div>
 	<div id="globalContext">
 		<ul id="globalMenu">
-			<li id="imagesContext">Images</li>
-			<li id="generateContext">Generate</li>
-			<li id="measureContext" class="menuDropdown">Measure</li>
-			<li id="viewContext" class="menuDropdown">View</li>
-			<li id="environmentContext" class="menuDropdown">Environment</li>
-			<li id="terrainContext" class="menuDropdown">Terrain</li>
+			<li id="imagesContext" role="button" tabindex="0">Images</li>
+			<li id="generateContext" role="button" tabindex="0">Generate</li>
+			<li id="measureContext" class="menuDropdown" role="button" tabindex="0">Measure</li>
+			<li id="viewContext" class="menuDropdown" role="button" tabindex="0">View</li>
+			<li id="environmentContext" class="menuDropdown" role="button" tabindex="0">Environment</li>
+			<li id="terrainContext" class="menuDropdown" role="button" tabindex="0">Terrain</li>
 			<!-- "Save" removed: it POSTed to the MapToGlobe server (share/key links) which a static self-host has no backend for. -->
-			<li id="screenshotsContext" class="menuDropdown">Screenshots</li>
-			<li id="animationsContext" class="menuDropdown">Animations</li>
-			<li id="projections" class="menuSpecial menuDropdown">Map Projections</li>
+			<li id="screenshotsContext" class="menuDropdown" role="button" tabindex="0">Screenshots</li>
+			<li id="animationsContext" class="menuDropdown" role="button" tabindex="0">Animations</li>
+			<li id="projections" class="menuSpecial menuDropdown" role="button" tabindex="0">Map Projections</li>
 			<li id="helpabout"><a href="https://github.com/eddyplolz/micras-globe#how-to-use-it" target="_blank" rel="noopener">Help</a></li>
 			<li id="explore"><a href="https://micras.org/mwiki/" target="_blank" rel="noopener">Explore</a></li>
 		</ul>
@@ -136,6 +140,14 @@
 					<button type="button" id="ringClear">Clear rings</button>
 				</div>
 				<div id="ringInfo" style="display:none"></div>
+				<details id="modelNotes">
+					<summary>Model assumptions and sources</summary>
+					<p>Missile rings use the standard range-class boundaries (1,000 / 3,000 / 5,500 km) as representative maxima; they are not a specific weapon.</p>
+					<p>Blast rings scale from published ~1 kt airburst references — cube-root for overpressure, separate exponents for fireball and thermal. Approximate, for worldbuilding scale.</p>
+					<p>Fallout plumes are an illustrative parametric model, not a dispersion simulation: band length scales with the square root of yield and with wind speed, width with the square root of yield. Real fallout depends on upper-air weather, terrain, and shelter.</p>
+					<p>Travel speeds are editable planning assumptions. Mechanical modes are sustained cruising speeds and exclude stops.</p>
+					<p><a href="https://media.defense.gov/2019/Apr/11/2002115472/-1/-1/0/7BIOCRUISECONTEMP.PDF" target="_blank" rel="noopener">Missile range classes</a> · <a href="https://micras.org/mwiki/Micras" target="_blank" rel="noopener">Micras canonical figures</a></p>
+				</details>
 				<div id="coordBox">
 					<div>From: <span id="coordA">&mdash;</span></div>
 					<div>To: <span id="coordB">&mdash;</span></div>
@@ -144,6 +156,7 @@
 				<div id="travelBox">
 					<label>Travel time by <select id="travelMode"></select></label><br>
 					<label>at <input type="text" id="travelSpeed" value="30"> km/day &rarr; <span id="travelTime">&mdash;</span></label>
+					<p class="controlNote">Editable planning assumption; mechanical modes exclude stops.</p>
 				</div>
 			</div>
 		</div>
@@ -160,10 +173,15 @@
 				<input type="text" id="parallelInt" value="10" /><span> degrees</span><br>
 				<label>Color: <div id="gridColor"></div></label>
 			</div>
+			<h2>Share View</h2>
+			<button type="button" id="copyViewLink">Copy current view link</button>
+			<span id="shareViewStatus" role="status" aria-live="polite"></span>
 		</div>
 		<div class="environmentContext">
 			<h3 class="panelTitle">Environment</h3>
 			<label><input type="checkbox" id="atmosphere" onclick="atmosphereToggle(this)" />Show Atmosphere</label><br>
+			<label><input type="checkbox" id="showTerminator" />Show day/night boundary</label><br>
+			<p class="controlNote">Follows the manual Sun Position controls; it is not a live clock.</p>
 			<div id="atmosphereSettings">
 				<label>Night-side darkness<input type="range" class="atmosphereSettings" id="nightDarkness" min="0" max="2" step="0.05" value="1"></label><br>
 				<label>Rayleigh Scattering<input type="range" class="atmosphereSettings" id="rScattering" min="0" max="0.01" step="0.000001" value="0.0025"></label><br>

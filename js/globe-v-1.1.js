@@ -104,6 +104,7 @@ function init() {
 }
 
 function render() {
+	if (typeof window.updateMicrasTerminator === 'function') window.updateMicrasTerminator();
 	renderer.autoClear = false;
 	renderer.clear();
 	renderer.render(backgroundScene, backgroundCamera);
@@ -531,6 +532,8 @@ function heightScaleChange(value) {
 //Window resize
 window.addEventListener('resize', windowResize, false);
 function windowResize() {
+	// A resize can fire before the scene finishes building; bail rather than throw.
+	if (!camera || !renderer) return;
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1418,6 +1421,14 @@ window.onload = function() {
 		}
 		else if ($(this).attr('id') == 'projections') {
 			($("#projectionArea").is(':hidden')) ? showProjection() : hideProjection();
+		}
+	});
+
+	// Menu items are <li>, so they get no keyboard activation for free.
+	$("#globalMenu > li[role='button']").on('keydown', function(event) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			this.click();
 		}
 	});
 

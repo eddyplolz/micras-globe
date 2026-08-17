@@ -45,7 +45,12 @@
   // Range Rings mode state.
   var ringCenter = null;        // world-space {x,y,z} of the last-clicked center
   var ringLines = [];           // THREE.Line objects for the drawn rings
-  var RING_EARTH_V_EQ = 465;    // m/s — Earth's equatorial rotation speed (assist ceiling)
+  // Canon comes from micras-defaults.js, which loads first. The literal fallback only
+  // covers that file being absent (e.g. a bare legacy build).
+  var CANON = window.MicrasCanon || { radiusKm: 6875, solarDayHours: 24 };
+  // Equatorial rotation speed = circumference / solar day. Derived, never typed, so it
+  // cannot drift from the radius the way an inherited Earth constant did.
+  var RING_V_EQ = 2 * Math.PI * CANON.radiusKm * 1000 / (CANON.solarDayHours * 3600);  // ~500 m/s
   var RING_PROMPT = 'Click a center point on the globe';
 
   function fmt(n, dp) {
@@ -208,7 +213,7 @@
 
   function planetRadiusKm() {
     var r = parseFloat(document.getElementById('radius').value);
-    return (isFinite(r) && r > 0) ? r : 6875;  // canonical Micras radius (MicrasWiki)
+    return (isFinite(r) && r > 0) ? r : CANON.radiusKm;
   }
 
   // --- Geodesic helpers (for the fallout plume) -------------------------------
@@ -399,7 +404,7 @@
     setText('distance', set.title + '  ·  center ' + formatCoord(c));
     if (!info) return;
     var latRad = Math.abs(c.lat) * Math.PI / 180;
-    var vAssist = RING_EARTH_V_EQ * Math.cos(latRad);
+    var vAssist = RING_V_EQ * Math.cos(latRad);
     var html = '';
     if (set.launch) {
       html += '<div class="ringLaunch">Rotational assist at ' + Math.abs(c.lat).toFixed(1) + '°: ' +
