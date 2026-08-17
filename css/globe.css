@@ -178,20 +178,15 @@ h1 a {
 #coordBox span {
 	font-weight: bold;
 }
+/* One line. The full caveats live in the README — a side panel is the wrong
+   place for a wall of them, and an expandable one nearly doubled this panel. */
 #modelNotes {
-	margin-top: 8px;
+	margin: 8px 0 0;
 	padding-top: 6px;
 	border-top: 1px solid rgba(255, 255, 255, 0.15);
-	font-size: 12px;
-	line-height: 1.5;
-	color: rgba(255, 255, 255, 0.75);
-}
-#modelNotes > summary {
-	cursor: pointer;
-	color: rgba(255, 255, 255, 0.9);
-}
-#modelNotes p {
-	margin: 6px 0 0;
+	font-size: 11.5px;
+	line-height: 1.45;
+	color: rgba(255, 255, 255, 0.6);
 }
 #modelNotes a {
 	color: #53A3FE;

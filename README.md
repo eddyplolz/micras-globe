@@ -53,10 +53,22 @@ The controls sit in tabs: Measure, View, Environment, Terrain, plus Images, Gene
 Animations, and Map Projections. On a phone the tab bar scrolls sideways — swipe it to reach the
 tabs that do not fit.
 
-What the presets assume is spelled out in **Model assumptions and sources**, a collapsible note at
-the bottom of the Measure panel. In short: missile rings are representative range classes rather
-than a specific weapon, blast rings use approximate cube-root scaling, and the fallout footprint is
-illustrative rather than predictive.
+## What the presets assume
+
+The Measure presets are sized for worldbuilding, not for analysis. What each one actually models:
+
+- **Missile rings** use the standard range-class boundaries — 1,000 km (SRBM), 3,000 km (MRBM),
+  5,500 km (IRBM), 12,000 km (ICBM). They are representative maxima for a class, not the range of
+  any particular weapon.
+- **Blast rings** scale from published ~1 kt airburst references: cube-root scaling for the
+  overpressure radii, separate exponents for fireball and thermal. Approximate, for scale.
+- **Fallout plumes** are an illustrative parametric shape, not a dispersion simulation. Band length
+  scales with the square root of yield and with wind speed; width with the square root of yield.
+  Real fallout depends on upper-air weather, terrain, and shelter.
+- **Travel times** are editable planning assumptions. Mechanical modes are sustained cruising
+  speeds and count no stops, so a short trip reads as a nonstop journey.
+- **Launch assist** uses Micras's own rotation: a 6,875 km radius and a 24-hour solar day give an
+  equatorial speed of about 500 m/s, falling off with the cosine of latitude.
 
 About the numbers: distances are true great-circle and accurate at every range, using Micras's
 canonical planetary radius of 6,875 km (per the MicrasWiki "Micras" infobox). Latitude runs from the pole. Longitude is measured east or
