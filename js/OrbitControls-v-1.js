@@ -441,8 +441,15 @@ THREE.OrbitControls = function ( object, domElement ) {
 		scope.dispatchEvent( endEvent );
 		state = STATE.NONE;
 
-		if (measureEnabled && !mouseMoving)
-			placeDistancePoint(event);
+		if (!mouseMoving) {
+			// Consumer chain, same idiom as measurePackClick() inside placeDistancePoint:
+			// pin placement, when armed, consumes the click and returns true; otherwise it
+			// returns false and we fall through to measure. Checking pins first stops an
+			// armed Measure tool from silently swallowing pin clicks when both are on.
+			var pinned = (typeof window.pinModeClick === 'function') && window.pinModeClick(event);
+			if (!pinned && measureEnabled)
+				placeDistancePoint(event);
+		}
 
 		mouseMoving = false;
 

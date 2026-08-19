@@ -35,6 +35,7 @@
 	<script src="js/micras-defaults.js" defer></script>
 	<script src="js/measure.js" defer></script>
 	<script src="js/view-tools.js" defer></script>
+	<script src="js/pins.js" defer></script>
 	<!-- Google Analytics (UA-1986390-4) removed for the self-hosted Micras build.
 	     ga() is stubbed to a no-op so the app's analyticsEvent() calls stay harmless. -->
 	<script>
@@ -78,6 +79,7 @@
 			<li id="imagesContext" role="button" tabindex="0">Images</li>
 			<li id="generateContext" role="button" tabindex="0">Generate</li>
 			<li id="measureContext" class="menuDropdown" role="button" tabindex="0">Measure</li>
+			<li id="pinsContext" class="menuDropdown" role="button" tabindex="0">Pins</li>
 			<li id="viewContext" class="menuDropdown" role="button" tabindex="0">View</li>
 			<li id="environmentContext" class="menuDropdown" role="button" tabindex="0">Environment</li>
 			<li id="terrainContext" class="menuDropdown" role="button" tabindex="0">Terrain</li>
@@ -152,6 +154,14 @@
 					<p class="controlNote">Editable planning assumption; mechanical modes exclude stops.</p>
 				</div>
 			</div>
+		</div>
+		<div class="pinsContext">
+			<h3 class="panelTitle">Pins</h3>
+			<button type="button" id="addPin">Add pin</button>
+			<span id="pinStatus" role="status" aria-live="polite"></span>
+			<div id="pinsList"></div>
+			<button type="button" id="pinsClear">Clear all</button>
+			<p class="controlNote">Drop labeled markers for capitals, landmarks, or event sites. Click a colour swatch to recolour a pin. Pins are saved in this browser only.</p>
 		</div>
 		<div class="viewContext">
 			<h3 class="panelTitle">View</h3>

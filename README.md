@@ -35,6 +35,7 @@ Explore Micras:
 - Draws **range rings** around any point — missile ranges, nuclear blast rings by yield, a custom radius, a launch site's rotational assist to orbit, or a **downwind nuclear-fallout plume** with dose-rate bands (set wind direction and speed).
 - Draws a day/night boundary that follows the globe's manual sun-position controls without pretending to show a canonical current time.
 - Copies a shareable link that restores the same camera angle, zoom, and panned center.
+- Drops **named pins** — click the globe to mark capitals, landmarks, or event sites with a labeled marker. Pins are saved in your browser and reload on your next visit.
 - Adds a lat/long grid, flat-map projections (Mercator, Mollweide, more), atmosphere and lighting, and screenshot and GIF export.
 
 ## How to use it
@@ -46,10 +47,11 @@ Explore Micras:
 - Rings: in **Rings** mode, click a center point, then choose a preset (missile range, nuclear yield, custom radius, or launch site).
 - Day/night boundary: open **Environment**, enable **Show day/night boundary**, then move the Sun Position sliders.
 - Share a view: frame the globe, open **View**, and select **Copy current view link**.
+- Pins: open the **Pins** tab, click **Add pin**, then click the globe to drop a labeled marker. Rename it in the list, click its colour swatch to recolour, or delete it. Pins are saved in your browser only.
 - Different map: open **Images** and upload any 2:1 (equirectangular) picture.
 - Keyboard: Tab moves between menu items, Enter or Space opens one.
 
-The controls sit in tabs: Measure, View, Environment, Terrain, plus Images, Generate, Screenshots,
+The controls sit in tabs: Measure, Pins, View, Environment, Terrain, plus Images, Generate, Screenshots,
 Animations, and Map Projections. On a phone the tab bar scrolls sideways — swipe it to reach the
 tabs that do not fit.
 
