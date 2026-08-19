@@ -47,7 +47,7 @@ Explore Micras:
 - Rings: in **Rings** mode, click a center point, then choose a preset (missile range, nuclear yield, custom radius, or launch site).
 - Day/night boundary: open **Environment**, enable **Show day/night boundary**, then move the Sun Position sliders.
 - Share a view: frame the globe, open **View**, and select **Copy current view link**.
-- Pins: open the **Pins** tab, click **Add pin**, then click the globe to drop a labeled marker. Rename it in the list, click its colour swatch to recolour, or delete it. Pins are saved in your browser only.
+- Pins: open the **Pins** tab, click **Add pin**, then click the globe to drop a labeled marker. Rename it in the list, click its color swatch to recolor, or delete it. Pins are saved in your browser only.
 - Different map: open **Images** and upload any 2:1 (equirectangular) picture.
 - Keyboard: Tab moves between menu items, Enter or Space opens one.
 

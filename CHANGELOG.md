@@ -7,7 +7,7 @@ All notable changes to Micras Globe. Newest first.
 ### Added
 - **Named pins.** A new **Pins** tab turns the globe into an annotation layer. Click **Add pin**,
   then click the globe to drop a labeled marker for a capital, landmark, or event site. Rename a pin
-  in the list, click its colour swatch to recolour it, or delete it. Pins are stored by geographic
+  in the list, click its color swatch to recolor it, or delete it. Pins are stored by geographic
   latitude and longitude, so they stay put as the globe rotates, and they are saved in your browser
   (localStorage) so they reload on your next visit. Pins are per-browser and are not part of the
   shareable view link.

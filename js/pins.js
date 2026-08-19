@@ -24,7 +24,7 @@
 
   // High-contrast-on-blue-ocean palette (the ring-visibility lesson: light blue
   // vanishes on the water map). New pins cycle through these; a list swatch click
-  // advances to the next colour.
+  // advances to the next color.
   var PALETTE = ['#FF10D0', '#FFD24A', '#69F0AE', '#FF7043',
                  '#FFFFFF', '#B388FF', '#FFEA00', '#FF5252'];
 
@@ -70,7 +70,7 @@
 
   // --- Coordinates ------------------------------------------------------------
   // World-space picked point -> Micras lat/long, matching measure.js's geoCoords
-  // convention (sphere-local frame: +Y = geographic pole, +X = map centre = 0 lon,
+  // convention (sphere-local frame: +Y = geographic pole, +X = map center = 0 lon,
   // E positive). Stored as geography so pins stay put when the globe is rotated.
   function worldToGeo(point) {
     var v = new THREE.Vector3(point[0], point[1], point[2]);
@@ -105,7 +105,7 @@
   }
 
   // A canvas-textured sprite: white text in a translucent pill outlined in the
-  // pin colour, legible over any map colour. Sprites always face the camera.
+  // pin color, legible over any map color. Sprites always face the camera.
   function makeLabelSprite(text, colorHex) {
     var FS = 48, padX = 18, padY = 12;
     var font = '700 ' + FS + 'px "Open Sans", Arial, sans-serif';
@@ -219,8 +219,8 @@
       swatch.type = 'button';
       swatch.className = 'pinSwatch';
       swatch.style.background = pin.color;
-      swatch.title = 'Change colour';
-      swatch.setAttribute('aria-label', 'Change colour');
+      swatch.title = 'Change color';
+      swatch.setAttribute('aria-label', 'Change color');
       swatch.addEventListener('click', function () { cycleColor(pin.id); });
 
       var name = document.createElement('input');
