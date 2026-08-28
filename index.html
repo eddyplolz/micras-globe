@@ -22,7 +22,6 @@
 	<script src="js/OrbitControls-v-1.js" defer></script>
 	<script src="js/draw.js" defer></script>
 	<script src="js/gif.js" defer></script>
-	<script src="js/gif.worker.js" defer></script>
 	<script src="js/jszip.min.js" defer></script>
 	<script src="js/Simplex.min.js" defer></script>
 	<script src="js/d3.geo.projection.min.js" charset="utf-8" defer></script>
@@ -33,6 +32,7 @@
 	<script src="js/remodal.min.js" defer></script>
 	<script src="js/ui.js" defer></script>
 	<script src="js/micras-defaults.js" defer></script>
+	<script src="js/measure-core.js" defer></script>
 	<script src="js/measure.js" defer></script>
 	<script src="js/view-tools.js" defer></script>
 	<script src="js/pins.js" defer></script>
@@ -96,7 +96,7 @@
 			<h3 class="panelTitle">Measure</h3>
 			<input type="button" id="measure" value="Measure distance" onclick="measureToggle()" />
 			<div id="measureBox">
-				<label>Planet radius: <input type="text" id="radius" value="100"> km</label><br>
+				<label>Planet radius: <input type="text" id="radius" value="6875"> km</label><br>
 				<div id="measureModes">
 					<label><input type="radio" name="measureMode" value="distance" checked> Distance</label>
 					<label><input type="radio" name="measureMode" value="path"> Path</label>

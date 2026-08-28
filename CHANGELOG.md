@@ -2,6 +2,29 @@
 
 All notable changes to Micras Globe. Newest first.
 
+## 2026-08-28
+
+### Fixed
+- **Nuclear blast rings now match the references they cite.** The overpressure rings were drawn about
+  2.3x too small — a 1 Mt airburst put 5 psi at 3.1 km and 1 psi at 7.9 km. They are re-anchored to
+  the standard OTA / Glasstone & Dolan 1 Mt airburst table: 5 psi at about 7.1 km, 1 psi at about
+  18.7 km, and 20 psi at about 2.4 km. The fireball and thermal radii were already correct and are
+  unchanged.
+- **The fallout panel's wind label no longer contradicts the plume.** The plume stretches toward the
+  heading you enter, so the readout now reads "Wind blowing toward 90° E" instead of "Wind 90° E,"
+  which conventionally names a wind coming from the east — the opposite direction.
+- **The radius field no longer flashes "NaN km · NaN mi · NaN nm."** Typing in the Planet radius box
+  before placing two points, or clearing it entirely, used to run the distance math on missing
+  values. It now waits for both points and falls back to the canonical 6,875 km when the box is blank.
+
+### Changed
+- **The Planet radius field starts at 6,875 km in the page itself,** so there is no brief "100" on
+  first paint before the Micras default loads.
+- **The measurement math moved into a tested core.** Distance, bearing, spherical area, and the
+  blast / fallout scaling now live in `js/measure-core.js` as pure functions, pinned by a
+  dependency-free Node suite (`tests/measure-core.test.js`, run with `node tests/measure-core.test.js`).
+  The tool behaves exactly as before; the numbers are now guarded against regressions.
+
 ## 2026-08-18
 
 ### Added

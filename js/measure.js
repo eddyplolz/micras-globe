@@ -12,8 +12,13 @@
    custom radius, and launch-site rotational assist) — all on the same hook.
    ------------------------------------------------------------------------- */
 (function () {
-  var KM_TO_MI = 0.621371;
-  var KM_TO_NM = 0.539957; // nautical miles
+  // Pure math + formatting live in measure-core.js (loaded first in index.html),
+  // so the browser and the Node test suite share one implementation. This file
+  // keeps only the DOM/THREE glue and delegates the algebra to MeasureCore.
+  var MC = window.MeasureCore;
+
+  var KM_TO_MI = MC.KM_TO_MI;
+  var KM_TO_NM = MC.KM_TO_NM; // nautical miles
 
   // Travel presets — speed in km/day. Editable in the UI. Muscle-powered rows are
   // realistic daily campaign distances (a day's march or ride, with rest), so
@@ -33,7 +38,7 @@
     { name: 'Orbital (LEO)',    kmday: 674000 }   // ~7.8 km/s low-orbit ground track
   ];
 
-  var KM2_TO_MI2 = 0.386102; // square miles per square km
+  var KM2_TO_MI2 = MC.KM2_TO_MI2; // square miles per square km
 
   var lastKm = null;
 
@@ -53,9 +58,7 @@
   var RING_V_EQ = 2 * Math.PI * CANON.radiusKm * 1000 / (CANON.solarDayHours * 3600);  // ~500 m/s
   var RING_PROMPT = 'Click a center point on the globe';
 
-  function fmt(n, dp) {
-    return (+n.toFixed(dp === undefined ? 0 : dp)).toLocaleString('en-US');
-  }
+  function fmt(n, dp) { return MC.fmt(n, dp); }
 
   function setText(id, s) {
     var el = document.getElementById(id);
@@ -84,22 +87,10 @@
            Math.abs(c.lon).toFixed(1) + '°' + (c.lon >= 0 ? 'E' : 'W');
   }
 
-  // Initial great-circle bearing A -> B, in degrees clockwise from north. Uses
-  // only latitude and the longitude DIFFERENCE, so it is independent of the
-  // arbitrary prime-meridian anchor above.
-  function bearing(a, b) {
-    var d = Math.PI / 180;
-    var la1 = a.lat * d, la2 = b.lat * d, dLon = (b.lon - a.lon) * d;
-    var y = Math.sin(dLon) * Math.cos(la2);
-    var x = Math.cos(la1) * Math.sin(la2) - Math.sin(la1) * Math.cos(la2) * Math.cos(dLon);
-    return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
-  }
-
-  var COMPASS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
-                 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-  function compass(deg) {
-    return COMPASS[Math.round(deg / 22.5) % 16];
-  }
+  // Initial great-circle bearing A -> B (deg cw from north) and its 16-point
+  // compass label; both in MeasureCore (independent of the prime-meridian anchor).
+  function bearing(a, b) { return MC.bearing(a, b); }
+  function compass(deg) { return MC.compass(deg); }
 
   // Called by the legacy calcDistance() with the great-circle distance in km.
   function updateMeasureReadout(km) {
@@ -118,12 +109,7 @@
   }
   window.updateMeasureReadout = updateMeasureReadout;
 
-  function formatDuration(days) {
-    if (!isFinite(days) || days <= 0) return '—';
-    if (days >= 14) return fmt(days / 7, 1) + ' weeks';
-    if (days >= 1)  return fmt(days, 1) + ' days';
-    return fmt(days * 24, 1) + ' hours';
-  }
+  function formatDuration(days) { return MC.formatDuration(days); }
 
   function updateTravel() {
     var out = document.getElementById('travelTime');
@@ -134,16 +120,9 @@
   }
 
   // --- Path & Area geometry ---------------------------------------------------
-  // Great-circle length (km) between two world-space surface points, same math
-  // as the legacy calcDistance(): arc = planetRadius * central angle from chord.
-  function gcKm(p1, p2) {
-    var radius = planetRadiusKm();
-    var chord = Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2));
-    var rA = Math.sqrt(p1.x * p1.x + p1.y * p1.y + p1.z * p1.z);
-    var rB = Math.sqrt(p2.x * p2.x + p2.y * p2.y + p2.z * p2.z);
-    var R = (rA + rB) / 2 || 1;
-    return radius * 2 * Math.asin(Math.min(1, chord / (2 * R)));
-  }
+  // Great-circle length (km) between two world-space surface points, using the
+  // live radius field (MeasureCore.gcKm holds the arc-from-chord math).
+  function gcKm(p1, p2) { return MC.gcKm(p1, p2, planetRadiusKm()); }
 
   // Points along the great circle between two surface points, lifted just above
   // the globe (radius 101) so the traced line hugs the surface at any length.
@@ -162,22 +141,13 @@
     return pts;
   }
 
-  // Spherical-polygon area (km^2) from the vertices' lat/long. Independent of the
-  // longitude anchor (uses only longitude DIFFERENCES and latitude).
+  // Spherical-polygon area (km^2) from world-space vertices: convert each to
+  // lat/long here (needs the live sphere), then hand the geographic ring to
+  // MeasureCore for the anchor-independent area sum.
   function sphericalAreaKm2(pts) {
-    var radius = planetRadiusKm();
-    var d = Math.PI / 180;
-    var c = [];
-    for (var k = 0; k < pts.length; k++) c.push(geoCoords(pts[k]));
-    var sum = 0;
-    for (var i = 0; i < c.length; i++) {
-      var a = c[i], b = c[(i + 1) % c.length];
-      var dLon = (b.lon - a.lon) * d;
-      if (dLon > Math.PI) dLon -= 2 * Math.PI;
-      if (dLon < -Math.PI) dLon += 2 * Math.PI;
-      sum += dLon * (2 + Math.sin(a.lat * d) + Math.sin(b.lat * d));
-    }
-    return Math.abs(sum) * radius * radius / 2;
+    var coords = [];
+    for (var k = 0; k < pts.length; k++) coords.push(geoCoords(pts[k]));
+    return MC.sphericalAreaKm2(coords, planetRadiusKm());
   }
 
   // --- Range Rings ------------------------------------------------------------
@@ -187,28 +157,17 @@
   //   point(phi) = cos(theta)*C + sin(theta)*(cos(phi)*U + sin(phi)*V)
   // which is a unit vector for every phi; lift to 101 so it hugs the surface.
   // The orthonormal frame depends only on the center, so it is built once per
-  // center (circleFrame) and shared by all concentric rings.
+  // center (circleFrame) and shared by all concentric rings. MeasureCore does the
+  // vector algebra on plain {x,y,z}; here we bridge THREE and lift to the render
+  // radius (101) so the ring hugs the globe surface.
   function circleFrame(centerVec) {
-    var C = centerVec.clone().normalize();
-    var up = Math.abs(C.y) > 0.99 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
-    var U = new THREE.Vector3().crossVectors(C, up).normalize();
-    var V = new THREE.Vector3().crossVectors(C, U).normalize();
-    return { C: C, U: U, V: V };
+    return MC.circleFrame({ x: centerVec.x, y: centerVec.y, z: centerVec.z });
   }
 
   function smallCircle(frame, thetaRad, steps) {
-    var C = frame.C, U = frame.U, V = frame.V;
-    var cosT = Math.cos(thetaRad), sinT = Math.sin(thetaRad);
-    var pts = [];
-    for (var i = 0; i <= steps; i++) {
-      var phi = 2 * Math.PI * i / steps, w = Math.cos(phi), z = Math.sin(phi);
-      pts.push(new THREE.Vector3(
-        cosT * C.x + sinT * (w * U.x + z * V.x),
-        cosT * C.y + sinT * (w * U.y + z * V.y),
-        cosT * C.z + sinT * (w * U.z + z * V.z)
-      ).multiplyScalar(101));
-    }
-    return pts;
+    return MC.smallCircle(frame, thetaRad, steps).map(function (p) {
+      return new THREE.Vector3(p.x, p.y, p.z).multiplyScalar(101);
+    });
   }
 
   function planetRadiusKm() {
@@ -228,41 +187,23 @@
   }
 
   // Direct geodesic: the lat/long reached from (lat,lon) on compass bearing brgDeg
-  // after distKm along the surface (same bearing convention as bearing()).
+  // after distKm along the surface (uses the live radius; math in MeasureCore).
   function destPoint(lat, lon, brgDeg, distKm) {
-    var d = distKm / planetRadiusKm();
-    var la1 = lat * Math.PI / 180, lo1 = lon * Math.PI / 180, th = brgDeg * Math.PI / 180;
-    var la2 = Math.asin(Math.min(1, Math.max(-1,
-      Math.sin(la1) * Math.cos(d) + Math.cos(la1) * Math.sin(d) * Math.cos(th))));
-    var lo2 = lo1 + Math.atan2(Math.sin(th) * Math.sin(d) * Math.cos(la1),
-      Math.cos(d) - Math.sin(la1) * Math.sin(la2));
-    return { lat: la2 * 180 / Math.PI, lon: lo2 * 180 / Math.PI };
+    return MC.destPoint(lat, lon, brgDeg, distKm, planetRadiusKm());
   }
 
   // Nuclear fallout — a downwind contamination plume drawn as dose-rate contours.
-  // Illustrative parametric model (NOT a real fallout simulation): each band's
-  // downwind length scales with sqrt(yield) and wind speed, its width with
-  // sqrt(yield). Base figures are for ~1 Mt at 24 km/h wind.
+  // The dose-band model (illustrative, NOT a simulation) lives in MeasureCore;
+  // this dropdown maps a yield key to it.
   var FALLOUT_YIELDS = {
     fallout20:   { title: '20 kt fallout', kt: 20 },
     fallout1mt:  { title: '1 Mt fallout',  kt: 1000 },
     fallout50mt: { title: '50 Mt fallout', kt: 50000 }
   };
-  var FALLOUT_BANDS = [
-    { label: 'Lethal dose',     L0: 22,  W0: 9,  color: 0xFF1744 },
-    { label: 'Severe dose',     L0: 60,  W0: 22, color: 0xFFEA00 },
-    { label: 'Detectable dose', L0: 170, W0: 45, color: 0x69F0AE }
-  ];
   function windDir()   { var v = parseFloat(document.getElementById('windDir').value);   return isFinite(v) ? v : 90; }
   function windSpeed() { var v = parseFloat(document.getElementById('windSpeed').value); return (isFinite(v) && v > 0) ? v : 24; }
 
-  function falloutBands(kt, kmh) {
-    var lenScale = Math.sqrt(kt / 1000) * (kmh / 24);
-    var widScale = Math.sqrt(kt / 1000);
-    return FALLOUT_BANDS.map(function (b) {
-      return { label: b.label, color: b.color, km: b.L0 * lenScale, wideKm: b.W0 * widScale };
-    });
-  }
+  function falloutBands(kt, kmh) { return MC.falloutBands(kt, kmh); }
 
   // Teardrop outline (world-space points) for one dose band: pinched at ground
   // zero, widest about a third of the way downwind, tapering to a point at the end.
@@ -290,19 +231,8 @@
     icbm: { title: 'ICBM range',  rings: [{ km: 12000, color: 0xFF10D0, label: 'ICBM ~12,000 km' }] }
   };
 
-  // Nuclear blast rings by yield (kt). Overpressure radii use cube-root scaling
-  // from ~1 kt airburst references; fireball and thermal use their own exponents.
-  // Approximate, for worldbuilding scale — clearly labeled in the readout.
-  function nukeRings(kt) {
-    var cbrt = Math.pow(kt, 1 / 3);
-    return [
-      { km: 0.056 * Math.pow(kt, 0.40), color: 0xFFFFFF, label: 'Fireball' },
-      { km: 0.14  * cbrt,               color: 0xFF7043, label: 'Severe blast ~20 psi' },
-      { km: 0.31  * cbrt,               color: 0xFFB300, label: 'Moderate blast ~5 psi' },
-      { km: 0.67  * Math.pow(kt, 0.41), color: 0xEF5350, label: 'Thermal, 3rd-degree burns' },
-      { km: 0.79  * cbrt,               color: 0xFFD24A, label: 'Light blast ~1 psi' }
-    ];
-  }
+  // Nuclear blast rings by yield (kt) — cube-root scaled, math in MeasureCore.
+  function nukeRings(kt) { return MC.nukeRings(kt); }
   var NUKE_YIELDS = {
     nuke20:   { title: '20 kt airburst (fission)',      kt: 20 },
     nuke1mt:  { title: '1 Mt airburst (thermonuclear)', kt: 1000 },
@@ -412,7 +342,7 @@
               Math.round(100 * Math.cos(latRad)) + '% of the equatorial maximum).<br>' +
               'Launch <b>east</b>, from a low latitude on an eastern coast, for the biggest boost to orbit.</div>';
     } else if (set.fallout) {
-      html += '<div class="ringWind">Wind ' + Math.round(set.windDir) + '° ' + compass(set.windDir) +
+      html += '<div class="ringWind">Wind blowing toward ' + Math.round(set.windDir) + '° ' + compass(set.windDir) +
               ' at ' + fmt(set.windSpeed) + ' km/h — the plume drifts downwind of ground zero.</div>';
       for (var j = 0; j < set.bands.length; j++) {
         var bd = set.bands[j];

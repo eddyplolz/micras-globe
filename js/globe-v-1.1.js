@@ -635,7 +635,14 @@ function placeLine(point) {
 }
 
 function calcDistance() {
-	var radius = parseFloat(document.getElementById('radius').value);
+	// Require both points before computing: the #radius input handler calls this on
+	// every keystroke, so with 0 or 1 points placed the chord math would run on
+	// undefined coordinates and print "NaN km · NaN mi · NaN nm" (audit H2).
+	if (!('x' in pointA) || !('x' in pointB)) return;
+	// Blank/garbage radius falls back to Micras canon (6,875 km) instead of NaN,
+	// mirroring the Measurement Pack's planetRadiusKm() guard.
+	var r = parseFloat(document.getElementById('radius').value);
+	var radius = (isFinite(r) && r > 0) ? r : ((window.MicrasCanon && window.MicrasCanon.radiusKm) || 6875);
 	// Chord (straight-line) length between the two picked surface points, in globe units.
 	var chord = Math.sqrt( Math.pow(pointA['x'] - pointB['x'],2) + Math.pow(pointA['y'] - pointB['y'],2) + Math.pow(pointA['z'] - pointB['z'],2) );
 	// Sphere radius the points sit on, derived from the points themselves (no magic constant).

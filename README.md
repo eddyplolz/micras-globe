@@ -87,6 +87,14 @@ npx serve .
 Open the link it prints. To host your own copy, drop these files on any static host (GitHub Pages,
 Netlify, whatever you like).
 
+The measurement math (great-circle distance, bearings, spherical area, blast/fallout scaling) lives
+in `js/measure-core.js` as pure functions, pinned by a dependency-free Node suite. From the project
+root:
+
+```bash
+node tests/measure-core.test.js
+```
+
 ## Credits
 
 The globe, the measuring, the projections, the exports, and the shaders are all the work of
