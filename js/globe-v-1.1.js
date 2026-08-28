@@ -39,10 +39,15 @@ function setOptions() {
 }
 
 function init() {
-	if (Detector.webgl)
-		renderer = new THREE.WebGLRenderer({canvas: document.getElementById('globeCanvas'), antialias: true, preserveDrawingBuffer: true, alpha:true});
-	else
-		renderer = new THREE.CanvasRenderer({canvas: document.getElementById('globeCanvas'), alpha:true});
+	// No WebGL: the old THREE.CanvasRenderer fallback isn't bundled, so it would
+	// throw and leave a blank page. Show the standard "get WebGL" message, hide
+	// the LOADING spinner, and stop before anything depends on the renderer (H5).
+	if (!Detector.webgl) {
+		Detector.addGetWebGLMessage();
+		$(".loaderWrapper").hide();
+		return;
+	}
+	renderer = new THREE.WebGLRenderer({canvas: document.getElementById('globeCanvas'), antialias: true, preserveDrawingBuffer: true, alpha:true});
 
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera(5, window.innerWidth / window.innerHeight, 0.1, 10000);
@@ -178,6 +183,14 @@ function fileSelect(files) {
 				render();
 				$(".loaderWrapper").hide();
 			}, 10);
+		}, function() {
+			// r67's loadTexture has no onError by default, so a 404/offline image
+			// leaves the LOADING spinner up forever over a blank wireframe — the
+			// most likely failure on a static host. Stop the spinner and say what
+			// happened instead of failing silently (H4).
+			if (window.console) console.warn('Micras Globe: could not load texture ' + file.src);
+			$(".loaderWrapper .loader").hide();
+			$("#loading").html('Could not load the image.<br>Check your connection and reload the page.');
 		});
 	});
 }
@@ -547,6 +560,9 @@ function measureToggle() {
 			$("#distance").text('Click two spots on the globe');
 			pointA = [];
 			pointB = [];
+			// Clear any Range Rings / Path / Area overlays and return to Distance
+			// mode, so closing the panel never strands unremovable rings (H7).
+			if (typeof measurePackReset === 'function') measurePackReset();
 		}
 		else
 			measureEnabled = true;
@@ -1874,66 +1890,4 @@ window.onload = function() {
 				break;
 		}
 	})
-
-	$(window).on('keypress', function(e) {
-		if (e.keyCode == 111) {
-			earthObject = scene.getObjectByName("earthSphere");
-			if (earthObject === undefined) {
-				$("#imgCanvas").before("<img src='http://i.imgur.com/oeQ0op3.png' id='earthOverlay'>");
-				$("#earthOverlay").css({
-					'width': $("#imgCanvas").width(),
-					'height': $("#imgCanvas").height(),
-					'position': 'absolute',
-					'left': $("#imgCanvas").css("left"),
-					'top': $("#imgCanvas").css("top"),
-					'z-index': '9',
-					'opacity': '0.3'
-				})
-				THREE.ImageUtils.crossOrigin = '';
-				var earthOverlay = THREE.ImageUtils.loadTexture("http://i.imgur.com/oeQ0op3.png", {}, function() {render()});
-				var earthGeometry = new THREE.SphereGeometry(101,100,100);
-				var earthMaterial = new THREE.MeshBasicMaterial({map: earthOverlay, transparent: true, opacity: 0.5});
-				var earthSphere = new THREE.Mesh(earthGeometry, earthMaterial);
-				earthSphere.name = "earthSphere";
-				scene.add(earthSphere);
-				render();
-				$(window).on('mousemove', function(e) {
-					if (!mousedown) {
-						return;
-					}
-					e.preventDefault;
-					var deltaX = e.clientX - mouseX;
-					var deltaY = e.clientY - mouseY;
-					mouseX = e.clientX;
-					mouseY = e.clientY;
-					rotateEarth(deltaX, deltaY);
-				});
-			} else {
-				$("#earthOverlay").remove();
-				scene.remove(earthObject);
-				render();
-				$(window).off('mousemove');
-			}
-		}
-	})
-
-	$(window).on('mousedown', function(e) {
-		if (e.which == 3) {
-			mousedown = true;
-			mouseX = e.clientX;
-			mouseY = e.clientY;
-		}
-	}).mouseup(function(e) {
-		if (mousedown) {
-			e.preventDefault();
-			mousedown = false;
-		}
-	});
-
-	function rotateEarth(deltaX, deltaY) {
-		earthObject = scene.getObjectByName("earthSphere");
-		earthObject.rotation.y += deltaX / 300;
-		earthObject.rotation.x += deltaY / 300;
-		render();
-	}
 }

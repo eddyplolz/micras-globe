@@ -58,6 +58,13 @@
     return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
   }
 
+  // Integer heading in [0, 360) for display: round FIRST, then wrap, so a
+  // bearing of 359.7 shows "0" rather than "360 N", and a negative wind
+  // heading normalizes into range (M8).
+  function roundHeadingDeg(deg) {
+    return ((Math.round(deg) % 360) + 360) % 360;
+  }
+
   // --- Great-circle distance --------------------------------------------------
   // Arc length (km) between two world-space surface points p1, p2 (plain
   // {x,y,z}). arc = radiusKm * central angle, with the central angle recovered
@@ -180,6 +187,7 @@
     formatDuration: formatDuration,
     compass: compass,
     bearing: bearing,
+    roundHeadingDeg: roundHeadingDeg,
     gcKm: gcKm,
     sphericalAreaKm2: sphericalAreaKm2,
     destPoint: destPoint,

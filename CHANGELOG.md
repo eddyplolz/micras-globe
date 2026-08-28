@@ -2,6 +2,28 @@
 
 All notable changes to Micras Globe. Newest first.
 
+## 2026-08-28 (reliability pass)
+
+### Fixed
+- **A failed map load no longer leaves an endless LOADING spinner.** If the map image can't be
+  fetched (a bad connection, a temporary host hiccup), the spinner now stops and a short message asks
+  you to check your connection and reload, instead of hanging over a blank green wireframe.
+- **Browsers without WebGL get a real message, not a blank page.** On a device or browser that can't
+  run WebGL, the globe now shows the standard "your browser doesn't support WebGL" note instead of
+  failing silently to nothing.
+- **Closing the Measure panel now clears what you drew.** Previously, drawing range rings or a
+  path/area and then closing the Measure panel left the overlays stuck on the globe with no way to
+  remove them. Closing the panel now clears them and returns to Distance mode.
+- **A due-north bearing reads "0° N", never "360° N".** The compass bearing readout now normalizes
+  to the 0–359° range.
+
+### Changed
+- **The globe now reports startup problems instead of failing quietly.** If the globe can't finish
+  starting up, the map loader, saved pins, and shared-view features now log a clear warning rather
+  than silently never appearing.
+- **Removed a leftover "o" keyboard shortcut** inherited from the original MapToGlobe that overlaid an
+  unrelated third-party image and interfered with typing the letter "o" into text fields.
+
 ## 2026-08-28
 
 ### Fixed

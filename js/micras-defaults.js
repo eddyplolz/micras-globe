@@ -40,6 +40,13 @@ window.MicrasCanon = Object.freeze({
         fileSelect([{ id: 'surfaceFile', src: MICRAS_MAP }]);
       } else if (tries++ < 200) {
         setTimeout(loadDefaultSurface, 50);
+      } else {
+        // Gave up after ~10 s: the globe never initialized (e.g. init() threw),
+        // so the default map was never loaded. Fail loud instead of leaving the
+        // user staring at a silent LOADING spinner (audit H6).
+        if (window.console) console.warn('Micras Globe: globe did not initialize within 10 s; the default map was not loaded.');
+        var loadingMsg = document.getElementById('loading');
+        if (loadingMsg) loadingMsg.innerHTML = 'The globe failed to start. Try reloading the page.';
       }
     })();
   }

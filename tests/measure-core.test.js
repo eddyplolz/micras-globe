@@ -88,6 +88,17 @@ test('compass cardinal points', function () {
   assert.strictEqual(MC.compass(-90), 'W');  // -90 == 270 == W
 });
 
+// --- roundHeadingDeg (M8: display must not print "360") ----------------------
+test('roundHeadingDeg wraps 360 to 0', function () {
+  assert.strictEqual(MC.roundHeadingDeg(359.7), 0);   // was "360 N"
+  assert.strictEqual(MC.roundHeadingDeg(360), 0);
+});
+test('roundHeadingDeg rounds and normalizes', function () {
+  assert.strictEqual(MC.roundHeadingDeg(180.4), 180);
+  assert.strictEqual(MC.roundHeadingDeg(0), 0);
+  assert.strictEqual(MC.roundHeadingDeg(-45), 315);   // negative wind heading
+});
+
 // --- nukeRings: OTA 1 Mt airburst anchors (C1) ------------------------------
 // OTA "Effects of Nuclear War" 1 Mt airburst: 20 psi ~ 1.5 mi (2.4 km),
 // 5 psi ~ 4.4 mi (7.1 km), 1 psi ~ 11.6 mi (18.7 km). cube-root scaled, so the

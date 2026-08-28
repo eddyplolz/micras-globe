@@ -227,7 +227,11 @@
   function init() {
     if (!ready()) {
       initAttempts++;
-      if (initAttempts < 200) setTimeout(init, 50);
+      if (initAttempts < 200) { setTimeout(init, 50); return; }
+      // Gave up after ~10 s: the globe never became ready, so the terminator and
+      // any shared view link can't be applied. Warn instead of failing silently
+      // (audit H6).
+      if (window.console) console.warn('Micras Globe: view tools could not initialize (globe not ready after 10 s); terminator and shared view were not applied.');
       return;
     }
 

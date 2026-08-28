@@ -103,7 +103,7 @@
       setText('coordA', formatCoord(ca));
       setText('coordB', formatCoord(cb));
       var brg = bearing(ca, cb);
-      setText('bearing', Math.round(brg) + '° ' + compass(brg));
+      setText('bearing', MC.roundHeadingDeg(brg) + '° ' + compass(brg));
     }
     updateTravel();
   }
@@ -467,6 +467,17 @@
     var el = document.getElementById(id);
     if (el) el.style.display = show ? '' : 'none';
   }
+
+  // Full reset for when the Measure panel is closed: clear any drawn rings/path,
+  // return to Distance mode, and re-check the Distance radio so the mode and the
+  // prompt agree on reopen. Without this, closing the panel in Rings/Path/Area
+  // mode strands the overlays with no visible way to clear them (H7).
+  function measurePackReset() {
+    var distanceRadio = document.querySelector('input[name="measureMode"][value="distance"]');
+    if (distanceRadio) distanceRadio.checked = true;
+    setMode('distance');
+  }
+  window.measurePackReset = measurePackReset;
 
   function initUI() {
     var sel = document.getElementById('travelMode');
