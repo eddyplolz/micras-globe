@@ -540,14 +540,18 @@ p, #imgurURL, label, span {
 	position: absolute;
 	background-color: #757575;
 	z-index: 9999;
-	top: 30px;
+	/* Sit flush below the 35px global menu bar. Was 30px, which pulled the strip
+	   up under the bar so the projection controls collided with it (audit follow-up). */
+	top: 35px;
 	width: 100%;
 	height: 40px;
 }
 
 #projMenuContainer {
 	position: absolute;
-	top: -5px;
+	/* Center the controls in the 40px strip instead of the old -5px, which lifted
+	   them into the menu bar above. */
+	top: 8px;
 	left: 65px;
 }
 

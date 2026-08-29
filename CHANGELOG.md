@@ -5,6 +5,9 @@ All notable changes to Micras Globe. Newest first.
 ## 2026-08-29 (mobile & housekeeping pass)
 
 ### Fixed
+- **The map-projection control bar no longer collides with the menu bar.** The Projection dropdown,
+  Download button, and note row sat too high and overlapped the top menu; the strip now sits cleanly
+  below it.
 - **The map-projection download button is visible again.** It relied on an icon image that was
   never shipped, so it rendered as an invisible gap; it is now a plain "Download PNG" button (and
   works with the keyboard). The outdated "click here for more info" link that pointed at a defunct
