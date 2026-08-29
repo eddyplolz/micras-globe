@@ -157,7 +157,11 @@
     var dz = values[2] - values[5];
     var distanceSquared = dx * dx + dy * dy + dz * dz;
     var maxDistance = Number(controls.maxDistance);
-    if (!isFinite(distanceSquared) || distanceSquared === 0 ||
+    // The globe render sphere has radius 100; a camera parked inside it renders a
+    // black screen (a crafted #view= link could do exactly that). Require the
+    // camera to sit outside the surface, not merely non-zero (audit L4).
+    var MIN_VIEW_DISTANCE = 100;
+    if (!isFinite(distanceSquared) || distanceSquared <= MIN_VIEW_DISTANCE * MIN_VIEW_DISTANCE ||
         (isFinite(maxDistance) && distanceSquared > maxDistance * maxDistance)) {
       return null;
     }

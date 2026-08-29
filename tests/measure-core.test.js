@@ -99,6 +99,28 @@ test('roundHeadingDeg rounds and normalizes', function () {
   assert.strictEqual(MC.roundHeadingDeg(-45), 315);   // negative wind heading
 });
 
+// --- unitToLatLon / latLonToUnit round-trip (M6 anchoring) ------------------
+// The two must be exact inverses: storing an overlay as {lat,lon} and rebuilding
+// its unit vector has to land back on the same geography, or rings/paths would
+// shift every redraw. Assert the round-trip across a spread of coordinates.
+test('latLonToUnit -> unitToLatLon is identity', function () {
+  var cases = [[0, 0], [45, 90], [-30, -120], [12.3, 179.9], [-89, 45], [0, 180]];
+  cases.forEach(function (c) {
+    var back = MC.unitToLatLon(MC.latLonToUnit(c[0], c[1]));
+    near(back.lat, c[0], 1e-9, 'lat round-trip ' + c);
+    near(back.lon, c[1], 1e-9, 'lon round-trip ' + c);
+  });
+});
+test('latLonToUnit hits the convention anchors', function () {
+  // 0,0 -> local +X (map center); equator/east 90 -> -Z; north pole -> +Y.
+  var eq = MC.latLonToUnit(0, 0);
+  near(eq.x, 1, 1e-9, '0,0 = +X'); near(eq.y, 0, 1e-9, ''); near(eq.z, 0, 1e-9, '');
+  var east = MC.latLonToUnit(0, 90);
+  near(east.z, -1, 1e-9, 'east 90 = -Z');
+  var pole = MC.latLonToUnit(90, 0);
+  near(pole.y, 1, 1e-9, 'north pole = +Y');
+});
+
 // --- nukeRings: OTA 1 Mt airburst anchors (C1) ------------------------------
 // OTA "Effects of Nuclear War" 1 Mt airburst: 20 psi ~ 1.5 mi (2.4 km),
 // 5 psi ~ 4.4 mi (7.1 km), 1 psi ~ 11.6 mi (18.7 km). cube-root scaled, so the

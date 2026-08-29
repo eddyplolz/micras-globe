@@ -28,6 +28,14 @@
   var PALETTE = ['#FF10D0', '#FFD24A', '#69F0AE', '#FF7043',
                  '#FFFFFF', '#B388FF', '#FFEA00', '#FF5252'];
 
+  // A pin color is only ever a "#rrggbb" string. localStorage is user-editable,
+  // so a corrupt value (a number, an object, a bad string) must not reach
+  // colorInt() (parseInt on a non-string throws) or swatch.style.background.
+  // Fall back to the first palette color instead (audit M1).
+  function sanitizeColor(c) {
+    return (typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c)) ? c : PALETTE[0];
+  }
+
   var pins = [];             // [{ id, name, lat, lon, color }]
   var objects = {};          // id -> { marker, label } (transient, not persisted)
   var placing = false;       // placement mode armed?
@@ -56,7 +64,7 @@
           return p && isFinite(p.lat) && isFinite(p.lon);
         }).map(function (p) {
           return { id: p.id || newId(), name: String(p.name || ''),
-                   lat: +p.lat, lon: +p.lon, color: p.color || PALETTE[0] };
+                   lat: +p.lat, lon: +p.lon, color: sanitizeColor(p.color) };
         });
       }
     } catch (e) { /* corrupt or storage disabled — start empty */ }
@@ -76,21 +84,17 @@
     var v = new THREE.Vector3(point[0], point[1], point[2]);
     sphere.updateMatrixWorld();
     sphere.worldToLocal(v);
-    var r = v.length() || 1;
-    var lat = Math.asin(Math.max(-1, Math.min(1, v.y / r))) * 180 / Math.PI;
-    var lon = Math.atan2(-v.z, v.x) * 180 / Math.PI;
-    return { lat: lat, lon: lon };
+    // The globe's coordinate convention lives once, tested, in MeasureCore
+    // (loaded before this file). Delegate rather than re-inline it so pins and
+    // the measure overlays can never drift apart.
+    return window.MeasureCore.unitToLatLon(v);
   }
 
   // Inverse: lat/long -> a unit vector in the sphere's LOCAL frame. Objects are
   // parented to the sphere, so local coordinates (not world) are correct here.
   function latLonToLocalUnit(lat, lon) {
-    var la = lat * Math.PI / 180, lo = lon * Math.PI / 180;
-    return new THREE.Vector3(
-      Math.cos(la) * Math.cos(lo),
-      Math.sin(la),
-      -Math.cos(la) * Math.sin(lo)
-    ).normalize();
+    var u = window.MeasureCore.latLonToUnit(lat, lon);
+    return new THREE.Vector3(u.x, u.y, u.z);
   }
 
   // --- Label sprite -----------------------------------------------------------
@@ -190,7 +194,15 @@
 
   function renderGlobe() {
     for (var id in objects) if (objects.hasOwnProperty(id)) disposeObjects(id);
-    for (var i = 0; i < pins.length; i++) buildObjects(pins[i]);
+    for (var i = 0; i < pins.length; i++) {
+      // sanitizeColor() already guarantees a valid color at load; this catch is
+      // the backstop for any OTHER per-pin failure in buildObjects (canvas /
+      // sprite / THREE). renderGlobe runs from init() before initUI() binds
+      // listeners, so an uncaught throw here would leave the whole Pins panel
+      // dead with no message (audit M1).
+      try { buildObjects(pins[i]); }
+      catch (e) { if (window.console) console.warn('Micras Globe: skipped a bad pin', pins[i], e); }
+    }
     render();
   }
 

@@ -65,6 +65,25 @@
     return ((Math.round(deg) % 360) + 360) % 360;
   }
 
+  // --- Local-frame unit vector <-> geographic lat/lon -------------------------
+  // The pure core of the globe's coordinate convention: pole = +Y, the 0-degree
+  // meridian at local +X, east-positive (so east lands at -Z). measure.js wraps
+  // these with the sphere's worldToLocal/localToWorld so ring and path anchors
+  // can be stored as geography and rebuilt under any tilt or rotation, instead
+  // of drifting when the globe turns under a world-space overlay (audit M6).
+  // They are exact inverses on lat in [-90,90], lon in (-180,180].
+  function unitToLatLon(v) {
+    var r = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z) || 1;
+    return {
+      lat: Math.asin(Math.max(-1, Math.min(1, v.y / r))) * 180 / Math.PI,
+      lon: Math.atan2(-v.z, v.x) * 180 / Math.PI
+    };
+  }
+  function latLonToUnit(lat, lon) {
+    var la = lat * Math.PI / 180, lo = lon * Math.PI / 180;
+    return { x: Math.cos(la) * Math.cos(lo), y: Math.sin(la), z: -Math.cos(la) * Math.sin(lo) };
+  }
+
   // --- Great-circle distance --------------------------------------------------
   // Arc length (km) between two world-space surface points p1, p2 (plain
   // {x,y,z}). arc = radiusKm * central angle, with the central angle recovered
@@ -188,6 +207,8 @@
     compass: compass,
     bearing: bearing,
     roundHeadingDeg: roundHeadingDeg,
+    unitToLatLon: unitToLatLon,
+    latLonToUnit: latLonToUnit,
     gcKm: gcKm,
     sphericalAreaKm2: sphericalAreaKm2,
     destPoint: destPoint,

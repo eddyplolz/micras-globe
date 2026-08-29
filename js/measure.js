@@ -44,11 +44,11 @@
 
   // Path / Area mode state (Distance mode keeps the legacy 2-click behavior).
   var mode = 'distance';        // 'distance' | 'path' | 'area' | 'rings'
-  var pathPoints = [];          // world-space {x,y,z} clicked in path/area mode
+  var pathPoints = [];          // {lat,lon} geography clicked in path/area mode (M6)
   var pathLine = null;          // THREE.Line rendering the polyline/loop
 
   // Range Rings mode state.
-  var ringCenter = null;        // world-space {x,y,z} of the last-clicked center
+  var ringCenter = null;        // {lat,lon} geography of the last-clicked center (M6)
   var ringLines = [];           // THREE.Line objects for the drawn rings
   // Canon comes from micras-defaults.js, which loads first. The literal fallback only
   // covers that file being absent (e.g. a bare legacy build).
@@ -75,11 +75,8 @@
   function geoCoords(p) {
     var v = new THREE.Vector3(p.x, p.y, p.z);
     sphere.updateMatrixWorld();
-    sphere.worldToLocal(v);
-    var r = v.length() || 1;
-    var lat = Math.asin(Math.max(-1, Math.min(1, v.y / r))) * 180 / Math.PI;
-    var lon = Math.atan2(-v.z, v.x) * 180 / Math.PI;
-    return { lat: lat, lon: lon };
+    sphere.worldToLocal(v);              // world -> the sphere's own frame
+    return MC.unitToLatLon(v);           // local unit vector -> lat/lon (tested)
   }
 
   function formatCoord(c) {
@@ -141,12 +138,10 @@
     return pts;
   }
 
-  // Spherical-polygon area (km^2) from world-space vertices: convert each to
-  // lat/long here (needs the live sphere), then hand the geographic ring to
-  // MeasureCore for the anchor-independent area sum.
-  function sphericalAreaKm2(pts) {
-    var coords = [];
-    for (var k = 0; k < pts.length; k++) coords.push(geoCoords(pts[k]));
+  // Spherical-polygon area (km^2) from geographic {lat,lon} vertices (path
+  // anchors are stored that way since M6); the area sum is anchor-independent,
+  // so it needs no world conversion.
+  function sphericalAreaKm2(coords) {
     return MC.sphericalAreaKm2(coords, planetRadiusKm());
   }
 
@@ -179,10 +174,10 @@
   // Inverse of geoCoords: a lat/long back to a world-space surface point (lifted
   // to 101), through the sphere's current rotation/tilt.
   function latLonToWorld(lat, lon) {
-    var la = lat * Math.PI / 180, lo = lon * Math.PI / 180;
-    var v = new THREE.Vector3(Math.cos(la) * Math.cos(lo), Math.sin(la), -Math.cos(la) * Math.sin(lo));
+    var u = MC.latLonToUnit(lat, lon);   // lat/lon -> local unit vector (tested)
+    var v = new THREE.Vector3(u.x, u.y, u.z);
     sphere.updateMatrixWorld();
-    sphere.localToWorld(v);
+    sphere.localToWorld(v);              // the sphere's frame -> world
     return v.normalize().multiplyScalar(101);
   }
 
@@ -268,19 +263,25 @@
     return { title: '', rings: [] };
   }
 
+  // Remove a THREE.Line from the scene AND free its GPU buffers. Dropping the JS
+  // reference alone leaks the geometry/material on the GPU — over a long session
+  // of Path/Area clicks and ring redraws that grows without bound (audit M5).
+  function disposeLine(obj) {
+    if (!obj) return;
+    scene.remove(obj);
+    if (obj.geometry) obj.geometry.dispose();
+    if (obj.material) obj.material.dispose();
+  }
+
   function clearRings() {
-    for (var i = 0; i < ringLines.length; i++) {
-      scene.remove(ringLines[i]);
-      if (ringLines[i].geometry) ringLines[i].geometry.dispose();
-      if (ringLines[i].material) ringLines[i].material.dispose();
-    }
+    for (var i = 0; i < ringLines.length; i++) disposeLine(ringLines[i]);
     ringLines = [];
   }
 
   function drawRings(rings) {
     clearRings();
     if (!ringCenter) { render(); return; }
-    var frame = circleFrame(new THREE.Vector3(ringCenter.x, ringCenter.y, ringCenter.z));
+    var frame = circleFrame(latLonToWorld(ringCenter.lat, ringCenter.lon));
     var Rp = planetRadiusKm();
     for (var i = 0; i < rings.length; i++) {
       var theta = rings[i].km / Rp;         // central angle, radians
@@ -300,7 +301,7 @@
   function drawFalloutSet(set) {
     clearRings();
     if (!ringCenter) { render(); return; }
-    var gz = geoCoords(ringCenter);
+    var gz = ringCenter;                 // already {lat,lon} (M6)
     for (var i = set.bands.length - 1; i >= 0; i--) {
       var b = set.bands[i];
       if (!(b.km > 0)) continue;
@@ -330,7 +331,7 @@
       if (info) info.innerHTML = '';
       return;
     }
-    var c = geoCoords(ringCenter);
+    var c = ringCenter;                  // already {lat,lon} (M6)
     setText('distance', set.title + '  ·  center ' + formatCoord(c));
     if (!info) return;
     var latRad = Math.abs(c.lat) * Math.PI / 180;
@@ -384,27 +385,40 @@
     if (mode === 'distance') return false;
     var p = coordinates(event);
     if (mode === 'rings') {
-      if (p) { ringCenter = { x: p[0], y: p[1], z: p[2] }; updateRings(); }
+      // Store the center as geography, not world-space, so the rings track the
+      // map when the globe is tilted or rotated (audit M6).
+      if (p) { ringCenter = geoCoords({ x: p[0], y: p[1], z: p[2] }); updateRings(); }
       return true;
     }
     if (p) {
-      pathPoints.push({ x: p[0], y: p[1], z: p[2] });
-      redrawPath();
-      updatePathReadout();
+      pathPoints.push(geoCoords({ x: p[0], y: p[1], z: p[2] }));
+      var world = pathWorldPoints();   // build once, share with both consumers
+      redrawPath(world);
+      updatePathReadout(world);
     }
     return true;
   }
   window.measurePackClick = measurePackClick;
 
-  function redrawPath() {
-    if (pathLine) { scene.remove(pathLine); pathLine = null; }
+  // pathPoints are stored as {lat,lon} (M6); resolve them to current world-space
+  // surface points for arc drawing and great-circle distances. Rebuilding through
+  // the sphere's live matrix is what keeps the trace on the map under rotation.
+  function pathWorldPoints() {
+    return pathPoints.map(function (pt) { return latLonToWorld(pt.lat, pt.lon); });
+  }
+
+  // world (optional) lets the caller share one pathWorldPoints() result with
+  // updatePathReadout instead of each rebuilding it; computed here if omitted.
+  function redrawPath(world) {
+    if (pathLine) { disposeLine(pathLine); pathLine = null; }
     if (pathPoints.length >= 2) {
       var n = pathPoints.length;
+      world = world || pathWorldPoints();
       var loop = (mode === 'area');
       var segs = loop ? n : n - 1;
       var verts = [];
       for (var i = 0; i < segs; i++) {
-        var seg = slerpArc(pathPoints[i], pathPoints[(i + 1) % n], 24);
+        var seg = slerpArc(world[i], world[(i + 1) % n], 24);
         if (i > 0) seg.shift(); // drop duplicate join vertex
         verts = verts.concat(seg);
       }
@@ -416,10 +430,11 @@
     render();
   }
 
-  function updatePathReadout() {
+  function updatePathReadout(world) {
     var n = pathPoints.length;
+    world = world || pathWorldPoints();
     var perim = 0, i;
-    for (i = 0; i < n - 1; i++) perim += gcKm(pathPoints[i], pathPoints[i + 1]);
+    for (i = 0; i < n - 1; i++) perim += gcKm(world[i], world[i + 1]);
     if (mode === 'path') {
       lastKm = perim;
       setText('distance', n < 2 ? 'Click points to trace a path' :
@@ -427,7 +442,7 @@
         fmt(perim * KM_TO_NM) + ' nm  (' + n + ' pts)');
       updateTravel();
     } else if (mode === 'area') {
-      var closeLeg = (n > 2) ? gcKm(pathPoints[n - 1], pathPoints[0]) : 0;
+      var closeLeg = (n > 2) ? gcKm(world[n - 1], world[0]) : 0;
       lastKm = perim + closeLeg;
       var areaKm2 = (n >= 3) ? sphericalAreaKm2(pathPoints) : 0;
       setText('distance', n < 3 ? 'Click at least 3 points to enclose an area' :
@@ -438,7 +453,7 @@
 
   function clearPath() {
     pathPoints = [];
-    if (pathLine) { scene.remove(pathLine); pathLine = null; render(); }
+    if (pathLine) { disposeLine(pathLine); pathLine = null; render(); }
     lastKm = null;
   }
 
@@ -507,7 +522,9 @@
     var undo = document.getElementById('measureUndo');
     var clr = document.getElementById('measureClear');
     if (undo) undo.addEventListener('click', function () {
-      pathPoints.pop(); redrawPath(); updatePathReadout();
+      pathPoints.pop();
+      var world = pathWorldPoints();   // build once, share with both consumers
+      redrawPath(world); updatePathReadout(world);
     });
     if (clr) clr.addEventListener('click', function () {
       clearPath();

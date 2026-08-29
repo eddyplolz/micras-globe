@@ -51,6 +51,13 @@ function canvasToImage() {
 	testimage.onload = function(e) {
 		var testtexture = new THREE.Texture(testimage);
 		testtexture.needsUpdate = true;
+		// Free the previous grid material + its texture before replacing it; the
+		// grid overlay owns them exclusively, so every toggle otherwise leaks a
+		// full-size texture on the GPU (audit M5).
+		if (drawSphere.material) {
+			if (drawSphere.material.map) drawSphere.material.map.dispose();
+			drawSphere.material.dispose();
+		}
 		drawSphere.material = new THREE.MeshPhongMaterial({map:testtexture, shininess: 6, transparent: true});
 		drawSphere.geometry.buffersNeedUpdate = true;
 		drawSphere.geometry.uvsNeedUpdate = true;

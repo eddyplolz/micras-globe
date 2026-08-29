@@ -2,6 +2,27 @@
 
 All notable changes to Micras Globe. Newest first.
 
+## 2026-08-28 (robustness pass)
+
+### Fixed
+- **Range rings and measured paths now stay put when you tilt or spin the globe.** They are anchored
+  to the map by latitude and longitude instead of to a fixed point in space, so rotating the globe or
+  changing its axial tilt no longer slides them off their target.
+- **A corrupt saved pin can no longer break the whole Pins panel.** A pin with a damaged color value
+  (from hand-edited browser storage) now falls back to a default color and is skipped if unreadable,
+  instead of leaving the panel dead with no message.
+- **Uploading a new surface or night map while the atmosphere is on now shows immediately.** Turning
+  the atmosphere back off keeps the surface you uploaded, rather than reverting to the earlier one.
+- **A shared view link can no longer drop you inside the globe.** Links that would place the camera
+  under the surface (a black screen) are rejected and the default view is kept.
+
+### Changed
+- **The rotating-globe GIF export uses fewer frames** (100 instead of 200) to roughly halve its memory
+  use, and now reports if the export is stopped or runs out of memory instead of hanging silently.
+- **Long sessions use less video memory.** Drawing and clearing paths, redrawing rings, swapping the
+  background image, and toggling the lat/long grid now free their old GPU buffers instead of leaking
+  them.
+
 ## 2026-08-28 (reliability pass)
 
 ### Fixed

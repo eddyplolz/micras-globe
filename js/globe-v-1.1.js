@@ -132,7 +132,18 @@ function fileSelect(files) {
 					sphere.material.uniforms.tDiffuse.value = eResult;
 					sky.material.uniforms.tDiffuseNight.value = eResult;
 					sphere.material.uniforms.tDiffuseNight.value = eResult;
+					// Keep the day-surface snapshot current too, so toggling the
+					// atmosphere off later restores THIS surface, not the one that
+					// was active when the atmosphere was switched on (audit M3).
+					diffuse = eResult;
+					if (nightMap == undefined) diffuseNight = eResult;
 				} else {
+					// Free the previous surface material before replacing it (audit
+					// M5). We dispose the material but NOT its .map: that texture can
+					// be aliased by an active heightmap (loadTerrain) or the
+					// atmosphere diffuse snapshot, so disposing it here could break
+					// those. The material object itself is owned only by sphere.
+					if (sphere.material && sphere.material.dispose) sphere.material.dispose();
 					sphere.material = new THREE.MeshPhongMaterial({map: eResult, needsUpdate: true, shininess: 6});
 					sphere.geometry.buffersNeedUpdate = true;
 					sphere.geometry.uvsNeedUpdate = true;
@@ -165,6 +176,16 @@ function fileSelect(files) {
 				analyticsEvent('Load background image');
 				$("#blackBG").attr('checked', false);
 				bgFile = file.src;
+				// Free the previous background materials and their texture before
+				// replacing them; the background meshes own them exclusively (no
+				// aliasing with the planet surface), so every swap otherwise leaks a
+				// full texture on the GPU (audit M5). The two meshes share one texture;
+				// THREE's dispose is idempotent, so a double free is safe.
+				[backgroundMesh, backgroundSphere].forEach(function (m) {
+					if (!m.material) return;
+					if (m.material.map) m.material.map.dispose();
+					m.material.dispose();
+				});
 				backgroundMesh.material = new THREE.MeshBasicMaterial({map: eResult, needsUpdate: true});
 				backgroundMesh.geometry.buffersNeedUpdate = true;
 				backgroundMesh.geometry.uvsNeedUpdate = true;
@@ -178,6 +199,13 @@ function fileSelect(files) {
 			} else if (type == 'nightFile') {
 				analyticsEvent('Load nightmap image');
 				nightMap = THREE.ImageUtils.loadTexture(file.src);
+				// Apply the new night map to the live atmosphere shader now, so it
+				// shows without needing an off/on atmosphere toggle (audit M3).
+				if (atmosphereEnabled) {
+					diffuseNight = nightMap;
+					sky.material.uniforms.tDiffuseNight.value = nightMap;
+					sphere.material.uniforms.tDiffuseNight.value = nightMap;
+				}
 			}
 			window.setTimeout(function() {
 				render();
@@ -1522,7 +1550,11 @@ window.onload = function() {
 
 		function getFrames() {
 			if (thisValue == "Rotating globe (fixed sun)") {
-				var frameCount = 200;
+				// 100 frames, not 200: each frame is a full-resolution RGBA copy held
+				// in memory until encoding starts, so 200 buffered ~450 MB and could
+				// OOM the tab. Halving keeps a smooth rotation at far less memory
+				// (audit M4). A full turn in 100 frames is 3.6 deg/frame.
+				var frameCount = 100;
 				var angle = rotateDir * ((360 / frameCount) * Math.PI) / 180;
 				var sunPosX = $("#sunPosX").val();
 				var sunPosY = $("#sunPosY").val();
@@ -1618,7 +1650,19 @@ window.onload = function() {
 				gifImage.src = URL.createObjectURL(blob);
 				gifImage.id = "gifImage";
 			});
-			gif.render();
+			// Surface an aborted or failed encode instead of leaving the user on a
+			// silent "Making gif from frames..." forever (audit M4).
+			gif.on('abort', function() {
+				$("#counterValue").hide();
+				document.getElementById('stepText').innerHTML = "GIF export was stopped.";
+			});
+			try {
+				gif.render();
+			} catch (e) {
+				if (window.console) console.error('Micras Globe: GIF encoding failed', e);
+				$("#counterValue").hide();
+				document.getElementById('stepText').innerHTML = "Sorry — the GIF could not be created (the browser may be out of memory).";
+			}
 			$(tempGifCanvas).remove();
 		}
 	});
