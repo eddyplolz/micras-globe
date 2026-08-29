@@ -3,6 +3,13 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Self-contained enforcement: no remote script/style/image/font/connect. Inline
+	     handlers (onclick=, the ga() stub, shader <script> blocks) need script-src
+	     'unsafe-inline'; style attributes need style-src 'unsafe-inline'; textures and
+	     screenshots ride data:/blob: URIs; gif.js spawns a same-origin (blob) worker.
+	     frame-ancestors/report-uri are omitted — they are inert in a <meta> CSP. -->
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'">
+	<meta name="referrer" content="no-referrer">
 	<title>Micras Globe</title>
 	<meta name="description" content="View the Micras world map as a 3D globe and measure distances. Self-hosted, based on MapToGlobe.">
 	<!-- Open Sans is self-hosted (see @font-face in css/globe.css, fonts/open-sans-latin.woff2); no external font requests. -->
@@ -254,7 +261,7 @@
 	<div id="projectionArea">
 		<div id="projectionMenu">
 			<div id="projMenuContainer">
-				<span id="projText">Projection:</span><select id="projectionSelect" onchange="updateMapProjection(this)"></select><div id="projDownload" title="Download projection image"><a href="" id="projExportLink"></a></div><span id="projImportant">IMPORTANT! Original image must be equirectangular projection. Click <a href="https://bitbucket.org/maptoglobe/maptoglobe.bitbucket.org" target="_blank">here</a> for more info.</span>
+				<span id="projText">Projection:</span><select id="projectionSelect" onchange="updateMapProjection(this)"></select><div id="projDownload" role="button" tabindex="0" title="Download projection image">Download PNG</div><span id="projImportant">IMPORTANT! The source map must be an equirectangular projection (the default Micras map already is).</span>
 			</div>
 		</div>
 		<canvas id="projectionCanvas"></canvas>

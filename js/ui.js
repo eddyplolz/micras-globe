@@ -40,8 +40,13 @@ $(function() {
 	});
 
 	$(".fileUpload").on('change', function() {
-		$('.remodal-confirm').prop('disabled', false);
-		$(".filePath").text(this.value);
+		// Only enable OK for an actual image. Choosing a non-image (or canceling the
+		// picker) used to enable OK anyway, then the confirm path silently no-opped
+		// because the thumbnail handler had rejected the file (audit L5).
+		var file = this.files && this.files[0];
+		var isImage = !!(file && file.type.match('image.*'));
+		$('.remodal-confirm').prop('disabled', !isImage);
+		$(".filePath").text(isImage ? this.value : "");
 	});
 
 	$("#imgurUrlBox").on('input', function() {
@@ -102,7 +107,9 @@ $(function() {
 
 	$(".fileUpload").on('change', function(evt) {
 		var reader = new FileReader();
-		if (!$(this)[0].files[0].type.match('image.*')) {
+		// Guard files[0]: canceling the file picker can fire 'change' with an empty
+		// list, and reading .type off undefined threw (audit L5).
+		if (!this.files.length || !this.files[0].type.match('image.*')) {
 			return;
 		}
 		var type = $(this).attr('id');

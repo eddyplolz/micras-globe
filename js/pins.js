@@ -60,10 +60,18 @@
       if (!raw) return;
       var data = JSON.parse(raw);
       if (data && data.pins && data.pins.length) {
+        // objects{} and disposeObjects() are keyed by pin id, so two pins sharing an
+        // id (possible from hand-edited storage) would overwrite each other's entry
+        // and orphan a marker/label on the sphere on every rebuild. Force ids unique
+        // on load so the id -> object map stays 1:1 (audit L11).
+        var seen = {};
         pins = data.pins.filter(function (p) {
           return p && isFinite(p.lat) && isFinite(p.lon);
         }).map(function (p) {
-          return { id: p.id || newId(), name: String(p.name || ''),
+          var id = p.id || newId();
+          if (seen[id]) id = newId();
+          seen[id] = true;
+          return { id: id, name: String(p.name || ''),
                    lat: +p.lat, lon: +p.lon, color: sanitizeColor(p.color) };
         });
       }
@@ -117,6 +125,10 @@
     var ctx = canvas.getContext('2d');
     ctx.font = font;
     var label = text || '(unnamed)';
+    // A several-hundred-character name builds a canvas wider than the GPU's
+    // MAX_TEXTURE_SIZE, which renders the whole label black. Clamp what the sprite
+    // draws (the stored pin name is untouched) so the texture stays in bounds (audit L11).
+    if (label.length > 60) label = label.slice(0, 59) + '…';
     var w = Math.ceil(ctx.measureText(label).width) + padX * 2;
     var h = FS + padY * 2;
     canvas.width = w;

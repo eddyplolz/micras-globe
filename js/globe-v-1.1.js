@@ -1233,6 +1233,9 @@ function hideProjection() {
 	options.length = 0;
 	$("#projectionArea").hide();
 	$("#globeCanvas").show();
+	// Resizes were ignored while the projection view held the listener off; run it
+	// once so the globe canvas picks up any size change that happened meanwhile (audit L9).
+	windowResize();
 }
 
 function initializeProjection() {
@@ -1603,6 +1606,10 @@ window.onload = function() {
 				var quat = new THREE.Quaternion();
 				var axis = new THREE.Vector3(-vector.y,vector.x,0);
 				var angle = 0;
+				// The sun loop runs until |angle| reaches a full turn, stepping by
+				// rotateSpeed each frame — so this is the frame total the counter needs.
+				// Without it the readout printed "1 of undefined" (audit L8).
+				var frameCount = Math.ceil((2 * Math.PI) / rotateSpeed);
 
 				function rotateSun() {
 					$("#counterValue").text((j+1) + " of " + frameCount);
@@ -1623,6 +1630,7 @@ window.onload = function() {
 					sphere.material.uniforms.fCameraHeight.value = lightPosition.length();
 					sphere.material.uniforms.fCameraHeight2.value = lightPosition.length() * lightPosition.length();
 					render();
+					j++;   // advance the frame counter so it reads "k of N", not a stuck "1 of N" (audit L8)
 					if (Math.abs(angle)<(2*Math.PI)) {
 						setTimeout(rotateSun, 1);
 					} else {
@@ -1861,6 +1869,15 @@ window.onload = function() {
 		    document.getElementById("exportLink").click();
 		}
 	})
+
+	// #projDownload is a role="button" div, so give it keyboard activation like the
+	// top menu items get (audit L6).
+	$("#projDownload").on('keydown', function(event) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			this.click();
+		}
+	});
 
 	$(".sunPosition").on('change input', function() {
 		var thisControl = this;

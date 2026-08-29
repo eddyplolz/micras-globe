@@ -579,14 +579,20 @@ p, #imgurURL, label, span {
 	right: 0;
 }
 
+/* Text button. The former icon background (img/download2.png) never shipped, so
+   the control rendered as an invisible 32x32 gap (audit L6). */
 #projDownload {
-	background: url('./img/download2.png') center center no-repeat;
 	display: inline-block;
 	position: relative;
-	top: 9px;
+	top: 5px;
 	left: 3px;
-	width: 32px;
-	height: 32px;
+	padding: 4px 10px;
+	border: 1px solid #888;
+	border-radius: 3px;
+	background: #f4f4f4;
+	color: #222;
+	cursor: pointer;
+	user-select: none;
 }
 
 #projDownload:hover {

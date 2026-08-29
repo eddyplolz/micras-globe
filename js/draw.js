@@ -21,7 +21,11 @@ var canvas, tempCanvas, tempCtx, gridCanvas;
 
 function flatInit() {
 	canvas = document.getElementById('flatCanvas');
-	var width = window.innerWidth - 350;
+	// The -350 is the desktop side-panel offset; below ~351px viewports it goes
+	// negative, and a negative canvas width wraps through ToUint32 to a huge value
+	// that breaks the grid/Generate/GIF plumbing on narrow phones (audit L10). Floor
+	// it so the offscreen grid canvas stays a valid, usable size.
+	var width = Math.max(256, window.innerWidth - 350);
 	var height = width / 2;
 
 	canvas.width = width;

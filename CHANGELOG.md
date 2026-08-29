@@ -2,6 +2,33 @@
 
 All notable changes to Micras Globe. Newest first.
 
+## 2026-08-29 (mobile & housekeeping pass)
+
+### Fixed
+- **The map-projection download button is visible again.** It relied on an icon image that was
+  never shipped, so it rendered as an invisible gap; it is now a plain "Download PNG" button (and
+  works with the keyboard). The outdated "click here for more info" link that pointed at a defunct
+  page was removed.
+- **The lat/long grid and world generator no longer break on narrow phone screens.** An offscreen
+  drawing canvas could be sized to a negative width below ~350px wide, corrupting the grid, Generate,
+  and GIF tools; its size is now floored to a valid minimum.
+- **The "rotating sun" GIF progress now counts correctly.** It showed "1 of undefined" and never
+  advanced; it now reads "3 of 126" and climbs as frames are captured.
+- **The globe canvas resizes correctly after you leave the Map Projections view.** If you resized the
+  window while that view was open, the globe now picks up the new size on return instead of staying
+  at the old dimensions.
+- **The image-upload dialog is steadier.** Choosing a non-image file (or canceling the file picker)
+  no longer enables OK on a file that would silently do nothing, and canceling the picker no longer
+  throws an error.
+- **Saved pins are hardier against hand-edited browser storage.** Duplicate pin IDs no longer leave
+  stray leftover markers on the globe, and a pin with an extremely long name no longer renders as a
+  black label.
+
+### Changed
+- **Added a Content-Security-Policy and a no-referrer policy.** The app was already self-contained
+  (no remote scripts, styles, images, or fonts); these make that guarantee explicit and enforced, and
+  stop outbound links from leaking the page URL.
+
 ## 2026-08-28 (robustness pass)
 
 ### Fixed
