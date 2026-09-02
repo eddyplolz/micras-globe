@@ -87,16 +87,18 @@
 	<div id="globalContext">
 		<ul id="globalMenu">
 			<li id="imagesContext" role="button" tabindex="0">Images</li>
-			<li id="generateContext" role="button" tabindex="0">Generate</li>
 			<li id="measureContext" class="menuDropdown" role="button" tabindex="0">Measure</li>
 			<li id="pinsContext" class="menuDropdown" role="button" tabindex="0">Pins</li>
 			<li id="viewContext" class="menuDropdown" role="button" tabindex="0">View</li>
 			<li id="environmentContext" class="menuDropdown" role="button" tabindex="0">Environment</li>
-			<li id="terrainContext" class="menuDropdown" role="button" tabindex="0">Terrain</li>
 			<!-- "Save" removed: it POSTed to the MapToGlobe server (share/key links) which a static self-host has no backend for. -->
 			<li id="screenshotsContext" class="menuDropdown" role="button" tabindex="0">Screenshots</li>
 			<li id="animationsContext" class="menuDropdown" role="button" tabindex="0">Animations</li>
 			<li id="projections" class="menuSpecial menuDropdown" role="button" tabindex="0">Map Projections</li>
+			<!-- The former "Generate" and "Terrain" items live here as one house: they build or
+			     shape your OWN generated world (procedural terrain, heightmaps), and do not apply
+			     to the Micras political map that loads by default. -->
+			<li id="worldsContext" class="menuDropdown" role="button" tabindex="0">Generated worlds</li>
 			<li id="helpabout"><a href="https://github.com/eddyplolz/micras-globe#how-to-use-it" target="_blank" rel="noopener">Help</a></li>
 			<li id="explore"><a href="https://micras.org/mwiki/" target="_blank" rel="noopener">Explore</a></li>
 		</ul>
@@ -178,6 +180,8 @@
 			<label><input type="checkbox" id="blackBG" />Solid black background</label><br>
 			<label><input type="checkbox" id="bgTransparent" onclick="toggleBGTransparent(this)" />Toggle Transparent Background</label><br>
 			<label><input type="checkbox" id="poleOption" onclick="checkPoleOption(this)" />Show Pole Line</label><br>
+			<label><input type="checkbox" id="showGeoLines" />Show equator &amp; prime meridian</label><br>
+			<p class="controlNote">The equator and Micras's prime meridian (through Norfolk Isles, where the two cross &mdash; the old site of Tymaria City).</p>
 			<label><input type="checkbox" id="showGrid">Show Lat/Long Grid</label><br>
 			<div id="gridSettings">
 				<label>Meridians interval</label><br>
@@ -211,8 +215,11 @@
 			<label>Light Intensity</label><br>
 			<input type="range" id="sunIntensity" value="1" min="0" max="5" step="0.01" oninput="changeLightInt(value)" /><br>
 		</div>
-		<div class="terrainContext">
-			<h3 class="panelTitle">Terrain</h3>
+		<div class="worldsContext">
+			<h3 class="panelTitle">Generated worlds</h3>
+			<p class="controlNote">These tools build or shape a world of <em>your own</em> &mdash; they do not apply to the Micras political map, which loads by default. Generate a random world, or upload a heightmap (Images) and give it relief here.</p>
+			<button type="button" id="generateWorldOpen">Generate a random world&hellip;</button>
+			<h2>Terrain relief</h2>
 			<label>Background View</label><br>
 			<label><input type="radio" name="bgType" id="bg2d" checked="checked" />2D</label><br>
 			<label><input type="radio" name="bgType" id="bg3d" />3D</label><br>

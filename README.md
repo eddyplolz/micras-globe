@@ -36,7 +36,9 @@ Explore Micras:
 - Draws a day/night boundary that follows the globe's manual sun-position controls without pretending to show a canonical current time.
 - Copies a shareable link that restores the same camera angle, zoom, and panned center.
 - Drops **named pins** — click the globe to mark capitals, landmarks, or event sites with a labeled marker. Pins are saved in your browser and reload on your next visit.
+- Optionally shows the **equator and Micras's prime meridian** — they cross at Norfolk Isles, the old site of Tymaria City.
 - Adds a lat/long grid, flat-map projections (Mercator, Mollweide, more), atmosphere and lighting, and screenshot and GIF export.
+- Under **Generated worlds** (a separate menu), you can also build your own random world or drape a heightmap for relief — kept apart from the Micras map so it's clear those tools aren't for it.
 
 ## How to use it
 

@@ -133,6 +133,64 @@
     render();
   }
 
+  // --- Equator & prime meridian ----------------------------------------------
+  // Two static great circles parented to the sphere (so they turn with the
+  // geography, like the terminator). The equator is latitude 0; the prime
+  // meridian is the tool's 0-degree line = map centre, which per MCS canon runs
+  // through Norfolk Isles (old Tymaria City), where it crosses the equator.
+  // PRIME_MERIDIAN_LON offsets the meridian if Norfolk Isles is not dead-centre
+  // on the map: one number, degrees east of map centre.
+  var GEO_LINE_RADIUS = 101;
+  var GEO_LINE_SEGMENTS = 128;
+  var PRIME_MERIDIAN_LON = 0;
+  var geoLinesEnabled = false;
+  var equatorLine = null;
+  var meridianLine = null;
+
+  function ringLine(points, colorHex) {
+    var geometry = new THREE.Geometry();
+    for (var i = 0; i < points.length; i++) {
+      geometry.vertices.push(new THREE.Vector3(points[i].x, points[i].y, points[i].z)
+        .multiplyScalar(GEO_LINE_RADIUS));
+    }
+    var material = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: 0.9, depthTest: true });
+    var line = new THREE.Line(geometry, material);
+    line.visible = geoLinesEnabled;
+    sphere.add(line);
+    return line;
+  }
+
+  function ensureGeoLines() {
+    if (equatorLine || !ready() || !window.MeasureCore) return;
+    var i, a, pts;
+    var toUnit = window.MeasureCore.latLonToUnit;
+
+    // Equator: latitude 0 all the way round.
+    pts = [];
+    for (i = 0; i <= GEO_LINE_SEGMENTS; i++) {
+      pts.push(toUnit(0, -180 + 360 * i / GEO_LINE_SEGMENTS));
+    }
+    equatorLine = ringLine(pts, 0xFFEB3B);   // yellow
+
+    // Prime-meridian great circle: cos(a)*U + sin(a)*northPole, where U is the
+    // 0-degree equator point (y = 0), so the ring runs pole -> 0 deg -> pole -> 180 deg.
+    var U = toUnit(0, PRIME_MERIDIAN_LON);
+    pts = [];
+    for (i = 0; i <= GEO_LINE_SEGMENTS; i++) {
+      a = 2 * Math.PI * i / GEO_LINE_SEGMENTS;
+      pts.push({ x: Math.cos(a) * U.x, y: Math.sin(a), z: Math.cos(a) * U.z });
+    }
+    meridianLine = ringLine(pts, 0xFF10D0);   // magenta (reads on the blue ocean)
+  }
+
+  function setGeoLines(enabled) {
+    geoLinesEnabled = enabled;
+    ensureGeoLines();
+    if (equatorLine) equatorLine.visible = enabled;
+    if (meridianLine) meridianLine.visible = enabled;
+    render();
+  }
+
   function viewPayload() {
     return [
       '1',
@@ -241,9 +299,15 @@
 
     var terminatorToggle = document.getElementById('showTerminator');
     var shareButton = document.getElementById('copyViewLink');
+    var geoLinesToggle = document.getElementById('showGeoLines');
     if (terminatorToggle) {
       terminatorToggle.addEventListener('change', function () {
         setTerminator(this.checked);
+      });
+    }
+    if (geoLinesToggle) {
+      geoLinesToggle.addEventListener('change', function () {
+        setGeoLines(this.checked);
       });
     }
     if (shareButton) shareButton.addEventListener('click', copyCurrentView);

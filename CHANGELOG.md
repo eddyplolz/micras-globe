@@ -2,6 +2,18 @@
 
 All notable changes to Micras Globe. Newest first.
 
+## 2026-09-02 (generated-worlds tab & reference lines)
+
+### Added
+- **Show equator & prime meridian.** A new option in the View menu draws Micras's equator and prime
+  meridian — the meridian runs through Norfolk Isles (old Tymaria City), where the two cross.
+
+### Changed
+- **The "Generate" and "Terrain" tools now live under one "Generated worlds" menu**, with a note that
+  they build or shape your own world and don't apply to the Micras political map. Same tools, grouped
+  and labeled so it's clear what's for the Micras map and what's for a world of your own. No features
+  were removed.
+
 ## 2026-09-02 (live map)
 
 ### Added

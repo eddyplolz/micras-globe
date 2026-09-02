@@ -28,7 +28,7 @@ $(function() {
 		$("[data-remodal-id=modalUpload]").remodal().open();
 	});
 
-	$("#generateContext").on('click', function() {
+	$("#generateWorldOpen").on('click', function() {
 		$("[data-remodal-id=modalGenerate]").remodal().open();
 	});
 
