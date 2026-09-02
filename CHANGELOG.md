@@ -2,6 +2,15 @@
 
 All notable changes to Micras Globe. Newest first.
 
+## 2026-09-02 (live map)
+
+### Added
+- **The globe now auto-updates from the live MCS map.** On load it fetches the current claims map
+  straight from micras.org, automatically crops out the legend, title, and frame, and textures the
+  globe with the clean 2:1 world rectangle — so the map stays current with every MCS update, with no
+  manual crop or re-upload. The bundled map still shows instantly and remains the fallback if the
+  live map can't be reached; you can still upload your own surface at any time.
+
 ## 2026-08-29 (mobile & housekeeping pass)
 
 ### Fixed

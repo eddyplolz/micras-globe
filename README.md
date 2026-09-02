@@ -27,7 +27,7 @@ Explore Micras:
 
 ## What it does
 
-- Shows the current Micras map on a globe, loaded automatically. No upload needed.
+- Shows the current Micras map on a globe, loaded automatically. No upload needed — it pulls the live map straight from the Micras Cartography Society and crops it to fit, so it stays current with every official update.
 - Measures true great-circle distance in kilometers, miles, and nautical miles.
 - Reads out latitude, longitude, and the compass bearing for each point.
 - Estimates travel time across many modes, from a marching army to a low-orbit ground track (speeds are editable).
