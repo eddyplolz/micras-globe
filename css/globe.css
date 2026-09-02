@@ -1166,6 +1166,16 @@ canvas {
 		bottom: auto;
 		max-width: calc(100% - 20px);
 		width: calc(100% - 20px);
+		/* On mobile this note sits at the top, exactly where the context-menu panels
+		   open. Drop it below the panels (z 10000) so an open panel covers it instead
+		   of the note bleeding over the panel title. */
+		z-index: 500;
+	}
+
+	/* And hide it outright while a panel is open, so none of it peeks out beside the
+	   320px panel (modern browsers; the z-index above is the universal fallback). */
+	body:has(#globalMenu > li.menuSelected) #disclaimer {
+		display: none;
 	}
 
 	h1 {

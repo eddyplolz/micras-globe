@@ -2,6 +2,14 @@
 
 All notable changes to Micras Globe. Newest first.
 
+## 2026-09-02 (mobile menu fix)
+
+### Fixed
+- **On phones, the "Distances are approximate…" note no longer overlaps an open menu panel.** The
+  note is positioned at the top on mobile, right where the panels open, so it collided with panel
+  text (most visibly the About panel's heading). It now hides while a panel is open and shows again
+  when you close it.
+
 ## 2026-09-02 (About tab)
 
 ### Added
