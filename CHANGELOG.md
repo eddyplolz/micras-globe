@@ -2,6 +2,14 @@
 
 All notable changes to Micras Globe. Newest first.
 
+## 2026-09-02 (About tab)
+
+### Added
+- **An About tab** with the tool's scale, coordinate convention, and known limitations in plain
+  language — including the land-area quirk (the wiki's land-area figures imply a ~11% larger planet
+  than its stated 6,875 km radius, which the tool uses as-is) and a note that the map is pulled live
+  from the Micras Cartography Society with a bundled fallback.
+
 ## 2026-09-02 (generated-worlds tab & reference lines)
 
 ### Added
@@ -9,7 +17,7 @@ All notable changes to Micras Globe. Newest first.
   meridian — the meridian runs through Norfolk Isles (old Tymaria City), where the two cross.
 
 ### Changed
-- **The "Generate" and "Terrain" tools now live under one "Generated worlds" menu**, with a note that
+- **The "Generate" and "Terrain" tools now live under one "Generated Worlds" menu**, with a note that
   they build or shape your own world and don't apply to the Micras political map. Same tools, grouped
   and labeled so it's clear what's for the Micras map and what's for a world of your own. No features
   were removed.

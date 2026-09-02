@@ -38,7 +38,7 @@ Explore Micras:
 - Drops **named pins** — click the globe to mark capitals, landmarks, or event sites with a labeled marker. Pins are saved in your browser and reload on your next visit.
 - Optionally shows the **equator and Micras's prime meridian** — they cross at Norfolk Isles, the old site of Tymaria City.
 - Adds a lat/long grid, flat-map projections (Mercator, Mollweide, more), atmosphere and lighting, and screenshot and GIF export.
-- Under **Generated worlds** (a separate menu), you can also build your own random world or drape a heightmap for relief — kept apart from the Micras map so it's clear those tools aren't for it.
+- Under **Generated Worlds** (a separate menu), you can also build your own random world or drape a heightmap for relief — kept apart from the Micras map so it's clear those tools aren't for it.
 
 ## How to use it
 
@@ -53,9 +53,10 @@ Explore Micras:
 - Different map: open **Images** and upload any 2:1 (equirectangular) picture.
 - Keyboard: Tab moves between menu items, Enter or Space opens one.
 
-The controls sit in tabs: Measure, Pins, View, Environment, Terrain, plus Images, Generate, Screenshots,
-Animations, and Map Projections. On a phone the tab bar scrolls sideways — swipe it to reach the
-tabs that do not fit.
+The controls sit in tabs: Images, Measure, Pins, View, Environment, Screenshots, Animations, Map
+Projections, **Generated Worlds** (build your own world — kept apart from the Micras map), and
+**About** (scale, coordinates, and known limitations). On a phone the tab bar scrolls sideways —
+swipe it to reach the tabs that do not fit.
 
 ## What the presets assume
 
@@ -75,8 +76,32 @@ The Measure presets are sized for worldbuilding, not for analysis. What each one
   equatorial speed of about 500 m/s, falling off with the cosine of latitude.
 
 About the numbers: distances are true great-circle and accurate at every range, using Micras's
-canonical planetary radius of 6,875 km (per the MicrasWiki "Micras" infobox). Latitude runs from the pole. Longitude is measured east or
-west of the map's center, a convention of this tool since Micras has no official prime meridian.
+canonical planetary radius of 6,875 km (per the MicrasWiki "Micras" infobox). Latitude runs from the
+pole. Longitude is measured east or west of the map's centre line, which the community treats as the
+prime meridian: it runs through Cakaristan and crosses the equator at Norfolk Isles, the old site of
+Tymaria City. Turn on **Show equator & prime meridian** in the View tab to see both lines.
+
+## Limitations and known quirks
+
+The in-app **About** tab summarizes these; here is the fuller version.
+
+- **The land-area quirk.** The MicrasWiki "Micras" infobox states a planetary radius of 6,875 km, but
+  the *land-area* figures in the same infobox (268.9 million km² of land at 36.51% land cover) imply a
+  larger planet — a radius near **7,656 km**, about 11% bigger. This is an internal canon inconsistency
+  (the radius and the land area were set at different times), not a tool error, and it is not the tool's
+  job to reconcile. Micras Globe uses the **stated 6,875 km**, so distances measured at planet scale
+  carry roughly that ~11% uncertainty. Regional distances are unaffected in practice.
+- **The live map.** The globe fetches the current map straight from the Micras Cartography Society
+  (`micras.org/maps/claimsmap.png`) on load and crops the world rectangle automatically, so it tracks
+  every official update. If that fetch fails (the site is down, or CORS is unavailable), the globe falls
+  back to a bundled copy of the map, which may be slightly out of date. You can always upload your own
+  surface from the Images tab.
+- **The prime meridian is a community convention, not an astronomical fix.** The 0° line is the map's
+  centre; there is no separately surveyed prime meridian on Micras beyond that.
+- **Estimates are for worldbuilding, not analysis.** See *What the presets assume* above — travel times,
+  blast rings, and fallout plumes are deliberately approximate.
+- **Generated Worlds are illustrative.** The procedural terrain and heightmap tools build a world of your
+  own; they have nothing to do with the Micras political map.
 
 ## Run it yourself
 

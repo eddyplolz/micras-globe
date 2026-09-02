@@ -98,7 +98,8 @@
 			<!-- The former "Generate" and "Terrain" items live here as one house: they build or
 			     shape your OWN generated world (procedural terrain, heightmaps), and do not apply
 			     to the Micras political map that loads by default. -->
-			<li id="worldsContext" class="menuDropdown" role="button" tabindex="0">Generated worlds</li>
+			<li id="worldsContext" class="menuDropdown" role="button" tabindex="0">Generated Worlds</li>
+			<li id="aboutContext" class="menuDropdown" role="button" tabindex="0">About</li>
 			<li id="helpabout"><a href="https://github.com/eddyplolz/micras-globe#how-to-use-it" target="_blank" rel="noopener">Help</a></li>
 			<li id="explore"><a href="https://micras.org/mwiki/" target="_blank" rel="noopener">Explore</a></li>
 		</ul>
@@ -216,7 +217,7 @@
 			<input type="range" id="sunIntensity" value="1" min="0" max="5" step="0.01" oninput="changeLightInt(value)" /><br>
 		</div>
 		<div class="worldsContext">
-			<h3 class="panelTitle">Generated worlds</h3>
+			<h3 class="panelTitle">Generated Worlds</h3>
 			<p class="controlNote">These tools build or shape a world of <em>your own</em> &mdash; they do not apply to the Micras political map, which loads by default. Generate a random world, or upload a heightmap (Images) and give it relief here.</p>
 			<button type="button" id="generateWorldOpen">Generate a random world&hellip;</button>
 			<h2>Terrain relief</h2>
@@ -258,6 +259,15 @@
 					<input type="range" id="sunRotateSpeed" value="0.05" min="0.04" max="0.07" step="0.001" /><output for="sunRotateSpeed" class="generatePropOutput">0.050</output>
 				</div>
 			</div>
+		</div>
+		<div class="aboutContext">
+			<h3 class="panelTitle">About &amp; limitations</h3>
+			<p class="controlNote"><strong>Scale.</strong> Distances use Micras's canonical radius, 6,875&nbsp;km (MicrasWiki), and are true great-circle at every range.</p>
+			<p class="controlNote"><strong>Land-area quirk.</strong> The wiki's land-area figures imply a bigger planet (radius ~7,656&nbsp;km, about 11% larger) than its stated 6,875&nbsp;km &mdash; an internal canon inconsistency. The tool uses 6,875&nbsp;km, so planet-scale distances carry ~11% uncertainty.</p>
+			<p class="controlNote"><strong>Coordinates.</strong> 0&deg; longitude is the map's centre, through Cakaristan; it meets the equator at Norfolk Isles. Toggle <em>Show equator &amp; prime meridian</em> in View.</p>
+			<p class="controlNote"><strong>Estimates.</strong> Travel times, blast rings and fallout are deliberately approximate &mdash; for worldbuilding, not analysis.</p>
+			<p class="controlNote"><strong>The map</strong> is pulled live from the MCS and auto-cropped (a bundled copy is the fallback). <em>Generated Worlds</em> tools are for your own worlds, not Micras.</p>
+			<p class="controlNote"><a href="https://github.com/eddyplolz/micras-globe#limitations-and-known-quirks" target="_blank" rel="noopener">Full notes &amp; limitations &rarr;</a></p>
 		</div>
 	</div>
 	<canvas id="globeCanvas"></canvas>
